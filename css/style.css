@@ -1,0 +1,22 @@
+body{
+    padding: 0;
+    margin: 0;
+}
+
+.container{
+    height: 150px;
+    width: 250px;
+    margin: 10px 10px;
+}
+.text-center{
+    align-content: center;
+    text-align: center;
+}
+.content{
+    background-color: #00e5ff;
+    padding: 5px 10px;
+    border: 1px solid #00b2cc;
+}
+.text-size-1{
+    font-size: 15px;
+}

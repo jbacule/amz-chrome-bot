@@ -1,0 +1,36 @@
+{
+    "name": "Seller Central Assistant Tool",
+    "version": "1.0",
+    "description": "Assistant tools for Seller Central Page",
+    "permissions": [
+        "declarativeContent",
+        "notifications",
+        "background",
+        "tabs"
+    ],
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
+    "content_scripts":[{
+        "run_at": "document_end",
+        "matches": ["https://sellercentral.amazon.com/*"],
+        "js": ["content.js"]
+    }],
+    "page_action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "images/icon16.png",
+            "32": "images/icon32.png",
+            "48": "images/icon48.png",
+            "128": "images/icon128.png"
+        }
+    },
+    "icons": {
+        "16": "images/icon16.png",
+        "32": "images/icon32.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
+    },
+    "manifest_version": 2
+  }
