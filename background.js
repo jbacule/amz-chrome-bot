@@ -8,12 +8,12 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
   });
 
 
-// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-//   if(request.type == "shownotification"){
-//     chrome.notifications.create('notify', request.opt, function(msj) {
-//       setTimeout(function() {
-//         chrome.notifications.clear(msj);
-//       }, 5000); 
-//     });
-//   }
-// });
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if(request.type == "shownotification"){
+    chrome.notifications.create("notify", request.opt, function(msj) {
+      setTimeout(function() {
+        chrome.notifications.clear(msj);
+      }, 5000); 
+    });
+  }
+});

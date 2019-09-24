@@ -1,12 +1,15 @@
 {
     "name": "Seller Central Assistant Tool",
     "version": "1.0",
+    "author":"shujo",
     "description": "Assistant tools for Seller Central Page",
     "permissions": [
         "declarativeContent",
         "notifications",
         "background",
-        "tabs"
+        "tabs",
+        "storage",
+        "activeTab"
     ],
     "background": {
         "scripts": ["background.js"],
@@ -15,7 +18,7 @@
     "content_scripts":[{
         "run_at": "document_end",
         "matches": ["https://sellercentral.amazon.com/*"],
-        "js": ["content.js"]
+        "js": ["js/jquery.js","content.js"]
     }],
     "page_action": {
         "default_popup": "popup.html",

@@ -1,17 +1,19 @@
 body{
     padding: 0;
     margin: 0;
+    background-color: #f5f5f5;
 }
 .container{
-    height: 150px;
+    height: 100px;
     width: 250px;
-}
-.text-center{
-    align-content: center;
-    text-align: center;
+    margin: 10px 10px;
 }
 .content{
-    background-color: #00e5ff;
-    padding: 5px 10px;
-    border: 1px solid #00b2cc;
+    height: 30px;
+    text-align: center;
+    padding-top: 7px;
+    margin-bottom: 10px;
+}
+.text-strong{
+    font-weight: bold;
 }

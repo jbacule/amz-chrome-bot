@@ -2,21 +2,38 @@
 <html lang="en">
 <head>
     <title>Seller Central Assistant Tool</title>
-    
-    <script src="js/jquery'.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="js/jquery.js"></script>
     <script src="popup.js"></script>
+    <script src="js/materialize.js"></script>
     <link rel="stylesheet" href="css/materialize.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
-        <div class="col s6">
-            <h6 class="text-center">Seller Central Assistant Tool</h6><hr>
-            <div class="content text-center">
-                <p id="url" class="text-size-1"></p>
+        <h6 class="center-align text-strong">Seller Central Assistant Tool</h6><hr>
+        <div class="row center-align">
+            <div id="url" class="teal darken-4 white-text content"></div>
+            <div class="page-content">
+                <div id="manageInventory" class="pages">
+                    <button class="btn waves-effect waves-light btn-small" type="button">Copy Data to Clipboard
+                            <i class="material-icons right">content_copy</i>
+                    </button>
+                </div>
+                <div id="priceAlert" class="pages">
+                    <button class="btn waves-effect waves-light btn-small" type="button">Copy Data to Clipboard
+                            <i class="material-icons right">content_copy</i>
+                    </button>
+                </div>
+                <div id="uploadFeed" class="pages">
+                    <div class="switch">
+                        <label><input type="checkbox" id="switchValue"><span class="lever"></span>
+                            <span id="purgeReplaceStatus"></span>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <script src="js/materialize.js"></script>
 </body>
 </html>
