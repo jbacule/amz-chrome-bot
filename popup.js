@@ -4,11 +4,16 @@ $(function(){
         detectSCSite(tabs[0]);
     }
     chrome.tabs.query({ active: true, currentWindow: true }, callback);
-    
+
+    redirectLink();
+
+    $("#menu").click(function(){
+        $("#allPage").show();
+        $("#pageHolder").hide();
+    })
 })
 
 const detectSCSite = tabData => {
-    console.log(tabData.id);
     let url = tabData.url;
     let page = "";
     if(url.indexOf('sellercentral.amazon.com/inventory?viewId=PRICEALERTS') >= 0){
@@ -20,16 +25,16 @@ const detectSCSite = tabData => {
         $(".pages").hide();
         $("#manageInventory").show();
     }else if(url.indexOf('sellercentral.amazon.com/listing/upload') >= 0){
-        page =  "Upload Feed"
+        page =  "Add Product via Upload"
         $(".pages").hide();
         $("#uploadFeed").show();
     }else{
-        page = ""
         $("#allPage").show();
+        $("#pageHolder").hide();
     }
 
     if(page!==""){
-        $('#url').text(`${page} Page detected!`);
+        $('#url').text(`${page}`);
     }else{
         $('#url').hide();
     }
@@ -89,6 +94,12 @@ const setManageInventory = () => {
         chrome.tabs.executeScript({
             file: "content.js"
         });
+        $("#manageInventory > button").hide();
+        $("#miStatus").text("Copied!");
+        setInterval(function(){
+            $("#manageInventory > button").show();
+            $("#miStatus").text("");
+        },2000);
     })
 }
 
@@ -98,5 +109,26 @@ const setPriceAlerts = () => {
         chrome.tabs.executeScript({
             file: "content.js"
         });
+        $("#priceAlert > button").hide();
+        $("#paStatus").text("Copied!");
+        setInterval(function(){
+            $("#priceAlert > button").show();
+            $("#paStatus").text("");
+        },2000);
     })
+}
+
+const redirectLink = () => {
+    $("a.collection-item:nth-child(1)").click(function(){
+        chrome.tabs.update({url: "https://sellercentral.amazon.com/inventory/ref=xx_invmgr_dnav_xx"});
+        window.close();
+    });
+    $("a.collection-item:nth-child(2)").click(function(){
+        chrome.tabs.update({url: "https://sellercentral.amazon.com/inventory?viewId=PRICEALERTS&ref_=myi_pa_vl_fba"});
+        window.close();
+    });
+    $("a.collection-item:nth-child(3)").click(function(){
+        chrome.tabs.update({url: "https://sellercentral.amazon.com/listing/upload?ref_=xx_upload_tnav_status"});
+        window.close();
+    });
 }

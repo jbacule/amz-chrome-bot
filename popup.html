@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Seller Central Assistant Tool</title>
+    <title>Seller Central Chrome Bot</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="js/jquery.js"></script>
     <script src="popup.js"></script>
@@ -11,32 +11,45 @@
 </head>
 <body>
     <div class="container">
-        <h6 class="center-align text-strong">Seller Central Assistant Tool</h6><hr>
+        <div class="row">
+            <img src="images/icon48.png" alt="" class="circle teal accent-2 left">
+            <h6 class="center-align text-strong title">Seller Central Chrome Bot</h6>
+            <a href="#" id="menu" class="right-align">Menu</a>
+        </div>
         <div class="row center-align">
-            <div id="url" class="teal darken-4 white-text content"></div>
+            
             <div class="page-content">
                 <div id="allPage" class="pages">
-                    <div class="collection">
-                        <a href="#!" class="collection-item">Manage Inventory</a>
-                        <a href="#!" class="collection-item">Price Alerts</a>
-                        <a href="#!" class="collection-item">Check & Upload Feed</a>
+                    <div class="collection blue-text text-darken-2">
+                        <a href="#" class="collection-item">Manage Inventory</a>
+                        <a href="#" class="collection-item">Price Alerts</a>
+                        <a href="#" class="collection-item">Check & Upload Feed</a>
                     </div>
                 </div>
-                <div id="manageInventory" class="pages">
-                    <button class="btn waves-effect waves-light btn-small" type="button">Copy Data to Clipboard
-                            <i class="material-icons right">content_copy</i>
-                    </button>
-                </div>
-                <div id="priceAlert" class="pages">
-                    <button class="btn waves-effect waves-light btn-small" type="button">Copy Data to Clipboard
-                            <i class="material-icons right">content_copy</i>
-                    </button>
-                </div>
-                <div id="uploadFeed" class="pages">
-                    <div class="switch">
-                        <label><input type="checkbox" id="switchValue"><span class="lever"></span>
-                            <span id="purgeReplaceStatus"></span>
-                        </label>
+                <div class="card" id="pageHolder">
+                    <div class="card-title teal darken-4 white-text">
+                        <div id="url"></div>
+                    </div>
+                    <div class="card-content">
+                        <div id="manageInventory" class="pages">
+                            <button class="btn waves-effect waves-light btn-small" type="button">Copy Table
+                                    <i class="material-icons right">content_copy</i>
+                            </button>
+                            <h6 id="miStatus"></h6>
+                        </div>
+                        <div id="priceAlert" class="pages">
+                            <button class="btn waves-effect waves-light btn-small" type="button">Copy Table
+                                    <i class="material-icons right">content_copy</i>
+                            </button>
+                            <h6 id="paStatus"></h6>
+                        </div>
+                        <div id="uploadFeed" class="pages">
+                            <div class="switch">
+                                <label><input type="checkbox" id="switchValue"><span class="lever"></span>
+                                    <span id="purgeReplaceStatus"></span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

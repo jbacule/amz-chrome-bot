@@ -5,15 +5,30 @@ body{
 }
 .container{
     height: 100px;
-    width: 250px;
-    margin: 10px 10px;
+    width: 260px;
+    margin: 15px 15px 0 15px;
 }
-.content{
-    height: 30px;
-    text-align: center;
-    padding-top: 7px;
-    margin-bottom: 10px;
+.card-title{
+    font-size: 15px !important;
+    padding: 10px 0 !important;
 }
 .text-strong{
     font-weight: bold;
+}
+.title{
+    padding-top:5px;
+}
+#menu{
+    margin-left: 8px;
+}
+.collection-item{
+    font-size: 12px;
+}
+
+.collection, .card{
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+}
+.card-content{
+    padding: 10px 0 !important;
 }

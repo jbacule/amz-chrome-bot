@@ -1,8 +1,8 @@
 {
-    "name": "Seller Central Assistant Tool",
+    "name": "Seller Central Chrome Bot",
     "version": "1.0",
     "author":"shujo",
-    "description": "Assistant tools for Seller Central Page",
+    "description": "A mini-bot extension that navigates & get the data from seller central website.",
     "permissions": [
         "declarativeContent",
         "notifications",
