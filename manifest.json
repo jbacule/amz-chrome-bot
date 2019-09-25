@@ -12,13 +12,13 @@
         "activeTab"
     ],
     "background": {
-        "scripts": ["background.js"],
+        "scripts": ["js/jquery.js","background.js"],
         "persistent": false
     },
     "content_scripts":[{
         "run_at": "document_end",
         "matches": ["https://sellercentral.amazon.com/*"],
-        "js": ["js/jquery.js","content.js"]
+        "js": ["js/jquery.js","js/myscript.js","content.js"]
     }],
     "page_action": {
         "default_popup": "popup.html",
