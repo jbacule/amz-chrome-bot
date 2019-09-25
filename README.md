@@ -1,2 +1,2 @@
-# sellercentral-assistant-tool
-chrome extension for seller central assistant tool
+# seller-central-chrome-bot
+A mini-bot extension that navigates & get the data from seller central website.
