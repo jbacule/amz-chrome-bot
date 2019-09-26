@@ -1,4 +1,6 @@
 $(function(){
+    $('.collapsible').collapsible();
+
     $(".pages").hide();
     function callback(tabs) {
         detectSCSite(tabs[0]);
