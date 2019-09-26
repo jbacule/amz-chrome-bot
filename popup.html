@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Seller Central Chrome Bot</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="css/materialize.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <div class="container">
         <div class="row">
@@ -17,38 +19,13 @@
             <a href="#" id="menu" class="right-align">Menu</a>
         </div>
         <div class="row center-align">
-            <ul class="collapsible">
-                <li>
-                  <div class="collapsible-header"><i class="material-icons">filter_drama</i>Manage Inventory</div>
-                    <div class="collapsible-body collection">
-                        <div class="collection-item grey lighten-5">Alvin</div>
-                        <div class="collection-item grey lighten-5">Alvin</div>
-                        <div class="collection-item grey lighten-5">Alvin</div>
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header"><i class="material-icons">filter_drama</i>Price Alerts</div>
-                      <div class="collapsible-body collection">
-                          <div class="collection-item grey lighten-5">Alvin</div>
-                          <div class="collection-item grey lighten-5">Alvin</div>
-                          <div class="collection-item grey lighten-5">Alvin</div>
-                      </div>
-                  </li>
-                  <li>
-                    <div class="collapsible-header"><i class="material-icons">filter_drama</i>Add Product via Upload</div>
-                      <div class="collapsible-body collection">
-                          <div class="collection-item grey lighten-5">Alvin</div>
-                          <div class="collection-item grey lighten-5">Alvin</div>
-                          <div class="collection-item grey lighten-5">Alvin</div>
-                      </div>
-                  </li>
-              </ul>
             <div class="page-content">
                 <div id="allPage" class="pages">
                     <div class="collection blue-text text-darken-2">
                         <a href="#" class="collection-item">Manage Inventory</a>
                         <a href="#" class="collection-item">Price Alerts</a>
-                        <a href="#" class="collection-item">Check & Upload Feed</a>
+                        <a href="#" class="collection-item">Add Products via Upload</a>
+                        <a href="#" class="collection-item">Amazon Detail Page</a>
                     </div>
                 </div>
                 <div class="card" id="pageHolder">
@@ -57,14 +34,14 @@
                     </div>
                     <div class="card-content">
                         <div id="manageInventory" class="pages">
-                            <button class="btn waves-effect waves-light btn-small" type="button">Copy Table
-                                    <i class="material-icons right">content_copy</i>
+                            <button class="btn waves-effect waves-light btn-small" type="button">Extract Table
+                                <i class="material-icons left">content_copy</i>
                             </button>
                             <h6 id="miStatus"></h6>
                         </div>
                         <div id="priceAlert" class="pages">
-                            <button class="btn waves-effect waves-light btn-small" type="button">Copy Table
-                                    <i class="material-icons right">content_copy</i>
+                            <button class="btn waves-effect waves-light btn-small" type="button">Extract Table
+                                <i class="material-icons left">content_copy</i>
                             </button>
                             <h6 id="paStatus"></h6>
                         </div>
@@ -81,4 +58,5 @@
         </div>
     </div>
 </body>
+
 </html>

@@ -16,17 +16,16 @@ $(function(){
 })
 
 const detectSCSite = tabData => {
-    let url = tabData.url;
     let page = "";
-    if(url.indexOf('sellercentral.amazon.com/inventory?viewId=PRICEALERTS') >= 0){
+    if(tabData.title === "Manage Inventory - Price Alerts"){
         page = "Price Alerts"
         $(".pages").hide();
         $("#priceAlert").show();
-    }else if(url.indexOf('sellercentral.amazon.com/inventory/ref=xx_invmgr_dnav_xx') >= 0 || url.indexOf('sellercentral.amazon.com/inventory?tbla_myitable') >= 0){
+    }else if(tabData.title === "Manage Inventory"){
         page =  "Manage Inventory"
         $(".pages").hide();
         $("#manageInventory").show();
-    }else if(url.indexOf('sellercentral.amazon.com/listing/upload') >= 0){
+    }else if(tabData.url.indexOf('sellercentral.amazon.com/listing/upload') >= 0){
         page =  "Add Product via Upload"
         $(".pages").hide();
         $("#uploadFeed").show();
@@ -128,5 +127,9 @@ const redirectLink = () => {
     $("a.collection-item:nth-child(3)").click(function(){
         chrome.tabs.update({url: "https://sellercentral.amazon.com/listing/upload?ref_=xx_upload_tnav_status"});
         window.close();
+    });
+    $("a.collection-item:nth-child(4)").click(function(){
+        $("#allPage").hide();
+        $("#amazonPage").show();
     });
 }

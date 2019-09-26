@@ -33,10 +33,3 @@ body{
 .card-content{
     padding: 10px 0 !important;
 }
-
-.collection-item{
-    background-color: #e0e0e0 !important; 
-}
-.collection-item:hover{
-    background-color: #bdbdbd !important; 
-}

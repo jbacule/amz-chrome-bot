@@ -17,7 +17,7 @@
     },
     "content_scripts":[{
         "run_at": "document_end",
-        "matches": ["https://sellercentral.amazon.com/*"],
+        "matches": ["https://sellercentral.amazon.com/*","https://www.amazon.com/*"],
         "js": ["js/jquery.js","js/myscript.js","content.js"]
     }],
     "page_action": {
