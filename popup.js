@@ -44,10 +44,6 @@ const detectSCSite = tabData => {
 }
 
 const setUploadFeed = () => {
-    chrome.storage.local.set({"pageEnabled": "uploadFeed"});
-    chrome.tabs.executeScript({
-        file: 'content.js'
-    });
     chrome.storage.local.get("priceAlertStatus", function(data) {
         if(data.priceAlertStatus === "enabled"){
             setupSwitch(true);
@@ -81,10 +77,10 @@ const setUploadFeed = () => {
 const setupSwitch = isEnabled => {
     if(isEnabled){
         $("#switchValue").prop('checked', isEnabled);
-        $("#purgeReplaceStatus").text("Purge & Replace Disabled!");
+        $("#purgeReplaceStatus").text("Purge & Replace Enabled!");
     }else{
         $("#switchValue").prop('checked', isEnabled);
-        $("#purgeReplaceStatus").text("Purge & Replace Enabled!");
+        $("#purgeReplaceStatus").text("Purge & Replace Disabled!");
     }
 }
 

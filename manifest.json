@@ -1,8 +1,8 @@
 {
-    "name": "Seller Central Chrome Bot",
-    "version": "1.0",
+    "name": "AMZ Chrome Bot",
+    "version": "1.1",
     "author":"shujo",
-    "description": "A mini-bot extension that navigates & get the data from seller central website.",
+    "description": "A mini-bot extension that navigates & get data from Seller Central and Amazon website.",
     "permissions": [
         "declarativeContent",
         "notifications",
