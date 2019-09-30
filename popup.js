@@ -1,135 +1,136 @@
-$(function(){
-    $('.collapsible').collapsible();
+$(document).ready(function() {
+    panelController();
+    manageButtons();
+    manageUploadFeed();
+    manageAmazonPage();
+});
 
-    $(".pages").hide();
-    function callback(tabs) {
-        detectSCSite(tabs[0]);
-    }
+function panelController(){
+    $(':button').click(function(){
+        if (this.id == 'btnManageInv') {
+            modifyPanel(this.id, 'ManageInv');
+        }else if (this.id == 'btnPriceAlert') {
+            modifyPanel(this.id, 'PriceAlert');
+        }else if (this.id == 'btnUploadFeed') {
+            modifyPanel(this.id, 'UploadFeed');
+        }else if (this.id == 'btnAmazonPage') {
+            modifyPanel(this.id, 'AmazonPage');
+        }
+    });
+
     chrome.tabs.query({ active: true, currentWindow: true }, callback);
 
-    redirectLink();
-
-    $("#menu").click(function(){
-        $("#allPage").show();
-        $("#pageHolder").hide();
-    })
-})
-
-const detectSCSite = tabData => {
-    let page = "";
-    if(tabData.title === "Manage Inventory - Price Alerts"){
-        page = "Price Alerts"
-        $(".pages").hide();
-        $("#priceAlert").show();
-    }else if(tabData.title === "Manage Inventory"){
-        page =  "Manage Inventory"
-        $(".pages").hide();
-        $("#manageInventory").show();
-    }else if(tabData.url.indexOf('sellercentral.amazon.com/listing/upload') >= 0){
-        page =  "Add Product via Upload"
-        $(".pages").hide();
-        $("#uploadFeed").show();
-    }else{
-        $("#allPage").show();
-        $("#pageHolder").hide();
-    }
-
-    if(page!==""){
-        $('#url').text(`${page}`);
-    }else{
-        $('#url').hide();
-    }
-    setUploadFeed();
-    setManageInventory();
-    setPriceAlerts();
-}
-
-const setUploadFeed = () => {
-    chrome.storage.local.get("priceAlertStatus", function(data) {
-        if(data.priceAlertStatus === "enabled"){
-            setupSwitch(true);
+    function callback(tabs) {
+        let tabData = tabs[0];
+        if(tabData.title === "Manage Inventory - Price Alerts"){
+            modifyPanel('btnPriceAlert', 'PriceAlert');
+        }else if(tabData.title === "Manage Inventory"){
+            modifyPanel('btnManageInv', 'ManageInv');
+        }else if(tabData.url.indexOf('sellercentral.amazon.com/listing/upload') >= 0){
+            modifyPanel('btnUploadFeed', 'UploadFeed');
         }else{
-            setupSwitch(false);
+            modifyPanel('btnAmazonPage', 'AmazonPage');
         }
-    });
-    
-    $(".switch").on("click",function() {
-        let status = "disabled";
-        let setEnabled = $("#switchValue").prop('checked');
-        if(setEnabled){
-            status = "disabled";
-            setupSwitch(false);
-        }else{
-            status = "enabled";
-            setupSwitch(true);
-        }
-        chrome.storage.local.set({"priceAlertStatus": status});
-
-        // reload page
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.reload(tabs[0].id);
-        });
-        chrome.tabs.executeScript({
-            file: 'content.js'
-        });
-    });
-}
-
-const setupSwitch = isEnabled => {
-    if(isEnabled){
-        $("#switchValue").prop('checked', isEnabled);
-        $("#purgeReplaceStatus").text("Purge & Replace Enabled!");
-    }else{
-        $("#switchValue").prop('checked', isEnabled);
-        $("#purgeReplaceStatus").text("Purge & Replace Disabled!");
     }
 }
 
-const setManageInventory = () => {
-    $("#manageInventory > button").click(function(){
+function modifyPanel(btn, panel){
+    $(`.panel`).css({ display: "none" });
+    $(`.tablink`).removeClass(' w3-teal');
+    $(`#${panel}`).css({ display: "block" });
+    $(`#${btn}`).addClass(' w3-teal');
+}
+
+function manageButtons(){
+    // Manage Inventory Page
+    $('#btnExtractManage').click(function(){
         chrome.storage.local.set({"pageEnabled": "manageInventory"});
         chrome.tabs.executeScript({
             file: "content.js"
         });
-        $("#manageInventory > button").hide();
-        $("#miStatus").text("Copied!");
+        $("#btnExtractManage").attr("disabled", true);
+        $("#btnExtractManage").html("Copied!");
         setInterval(function(){
-            $("#manageInventory > button").show();
-            $("#miStatus").text("");
+            $("#btnExtractManage").attr("disabled", false);
+            $("#btnExtractManage").html("Extract Table");
         },2000);
-    })
-}
-
-const setPriceAlerts = () => {
-    $("#priceAlert > button").click(function(){
+    });
+    $('#btnSearchManage').click(function(){
+        let searchText = $('#txtSearchManage').val();
+        chrome.tabs.update({url: `https://sellercentral.amazon.com/inventory/ref=xx_invmgr_dnav_xx?search:${searchText}`});
+        window.close();
+    });
+    // Price Alert Page
+    $('#btnExtractPrice').click(function(){
         chrome.storage.local.set({"pageEnabled": "priceAlerts"});
         chrome.tabs.executeScript({
             file: "content.js"
         });
-        $("#priceAlert > button").hide();
-        $("#paStatus").text("Copied!");
+        $("#btnExtractPrice").attr("disabled", true);
+        $("#btnExtractPrice").html("Copied!");
         setInterval(function(){
-            $("#priceAlert > button").show();
-            $("#paStatus").text("");
+            $("#btnExtractPrice").attr("disabled", false);
+            $("#btnExtractPrice").html("Extract Table");
         },2000);
-    })
+    });
+    $('#btnSearchPrice').click(function(){
+        let searchText = $('#txtSearchPrice').val();
+        chrome.tabs.update({url: `https://sellercentral.amazon.com/inventory?viewId=PRICEALERTS&ref_=myi_pa_vl_fba&search:${searchText}`});
+        window.close();
+    });
 }
 
-const redirectLink = () => {
-    $("a.collection-item:nth-child(1)").click(function(){
-        chrome.tabs.update({url: "https://sellercentral.amazon.com/inventory/ref=xx_invmgr_dnav_xx"});
-        window.close();
+function manageUploadFeed(){
+    chrome.storage.local.get("priceAlertStatus", function(data) {
+        if(data.priceAlertStatus==="enabled"){
+            $("#btnUploadStatus").html('Disabled');
+            $(`#btnUploadStatus`).removeClass('w3-red').addClass('w3-blue');
+        }else{
+            $("#btnUploadStatus").html('Enable');
+            $(`#btnUploadStatus`).removeClass('w3-blue').addClass('w3-red');
+        }
     });
-    $("a.collection-item:nth-child(2)").click(function(){
-        chrome.tabs.update({url: "https://sellercentral.amazon.com/inventory?viewId=PRICEALERTS&ref_=myi_pa_vl_fba"});
-        window.close();
+
+    $("#btnUploadStatus").on("click",function() {
+        chrome.storage.local.get("priceAlertStatus", function(data) {
+            let status = data.priceAlertStatus;
+            let newStatus;
+            if(status==="enabled"){
+                newStatus = "disabled";
+                $("#btnUploadStatus").html('Enable');
+                $(`#btnUploadStatus`).removeClass('w3-blue').addClass('w3-red');
+            }else{
+                newStatus = "enabled";
+                $("#btnUploadStatus").html('Disabled');
+                $(`#btnUploadStatus`).removeClass('w3-red').addClass('w3-blue');
+            }
+            chrome.storage.local.set({"priceAlertStatus": newStatus});
+    
+            // reload page
+            chrome.tabs.update({url: `https://sellercentral.amazon.com/listing/upload?ref_=xx_upload_tnav_status`});
+            chrome.tabs.executeScript({
+                file: 'content.js'
+            });
+        });
     });
-    $("a.collection-item:nth-child(3)").click(function(){
-        chrome.tabs.update({url: "https://sellercentral.amazon.com/listing/upload?ref_=xx_upload_tnav_status"});
-        window.close();
+    $('#gotoUploadFeed').click(function(){
+        chrome.tabs.update({url: `https://sellercentral.amazon.com/listing/upload?ref_=xx_upload_tnav_status`});
     });
-    $("a.collection-item:nth-child(4)").click(function(){
-        $("#allPage").hide();
-        $("#amazonPage").show();
+}
+
+function manageAmazonPage(){
+    $('#btnOlp,#btnMdp').click(function(){
+        let txtSearchAmazon = $('#txtSearchAmazon').val();
+        if(txtSearchAmazon === "" || txtSearchAmazon.substring(0,2) !== "B0"){
+            $("#alert-msg").text("Invalid ASIN!");
+        }else{
+            $("#alert-msg").text("");
+            if(this.id==="btnOlp"){
+                chrome.tabs.update({url: `https://www.amazon.com/gp/offer-listing/${txtSearchAmazon}`});
+            }else{
+                chrome.tabs.update({url: `https://www.amazon.com/dp/${txtSearchAmazon}`});
+            }
+            window.close();
+        }
     });
 }

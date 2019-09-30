@@ -20,15 +20,15 @@
         "matches": ["https://sellercentral.amazon.com/*","https://www.amazon.com/*"],
         "js": ["js/jquery.js","js/myscript.js","content.js"]
     }],
-    "page_action": {
-        "default_popup": "popup.html",
+    "browser_action": {
         "default_icon": {
-            "16": "images/icon16.png",
-            "32": "images/icon32.png",
-            "48": "images/icon48.png",
-            "128": "images/icon128.png"
-        }
-    },
+          "16": "images/icon16.png",
+          "24": "images/icon32.png",
+          "32": "images/icon48.png"
+        },
+        "default_title": "AMZ Chrome Bot",
+        "default_popup": "popup.html"
+      },
     "icons": {
         "16": "images/icon16.png",
         "32": "images/icon32.png",

@@ -1,15 +1,9 @@
-chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-  chrome.declarativeContent.onPageChanged.addRules([{
-    conditions: [
-      new chrome.declarativeContent.PageStateMatcher({
-        pageUrl: {hostEquals: 'sellercentral.amazon.com'},
-      }),
-      new chrome.declarativeContent.PageStateMatcher({
-        pageUrl: {hostEquals: 'www.amazon.com'},
-      })
-    ],
-    actions: [new chrome.declarativeContent.ShowPageAction()]
-  }]);
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.storage.local.set({
+      "copyShortcut": "enabled",
+      "priceAlertStatus": "enabled",
+      "shortcutAmazonNavigator": "enabled",
+    });
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
