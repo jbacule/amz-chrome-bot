@@ -15,12 +15,12 @@ body{
 .ml-5{
     margin-left: 20px;
 }
+.mt-5{
+    margin-top: 20px;
+}
 .tablink{
     font-size: 12px;
 }
 .btn-extract{
-    margin-top: 50%;
-}
-.shorcut{
-    margin-top: 20px;
+    margin-top: 45%;
 }

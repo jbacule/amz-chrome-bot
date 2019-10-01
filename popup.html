@@ -11,76 +11,70 @@
 </head>
 
 <body>
-    <div class="w3-container w3-margin-bottom">
-        <div class="w3-bar mt-2">
-            <img src="images/icon48.png" class="w3-bar-item">
-            <div class="w3-bar-item">
-                <div class="w3-large">AMZ Chrome Bot <span class="w3-small">v1.3.3</span></div>
-                <div class="w3-tiny" id="creator">created by shujo</div>
+    <div class="w3-bar w3-card-2">
+        <div class="w3-sidebar w3-bar-block w3-dark-grey" style="width:120px; height:310px;">
+            <div class="w3-bar-item w3-blue-grey">
+                <img src="images/icon32.png"><span><strong> Menu</strong></span>
             </div>
+            <button class="w3-bar-item w3-button tablink" id="btnManageInv">All Inventory</button>
+            <button class="w3-bar-item w3-button tablink" id="btnPriceAlert">Price Alerts</button>
+            <button class="w3-bar-item w3-button tablink" id="btnUploadFeed">Upload Feed</button>
+            <button class="w3-bar-item w3-button tablink" id="btnAmazonPage">Amazon Page</button>
+            <button class="w3-bar-item w3-button tablink" id="btnHelp">Help</button>
+            <span class="w3-bar-item w3-tiny w3-display-bottommiddle" id="appAuthor">created by shujo</div>
         </div>
-        <div class="w3-bar w3-card-2">
-            <div class="w3-sidebar w3-bar-block w3-dark-grey" style="width:120px; height:310px;">
-                <h6 class="w3-bar-item">Menu</h6>
-                <button class="w3-bar-item w3-button tablink" id="btnManageInv">All Inventory</button>
-                <button class="w3-bar-item w3-button tablink" id="btnPriceAlert">Price Alerts</button>
-                <button class="w3-bar-item w3-button tablink" id="btnUploadFeed">Upload Feed</button>
-                <button class="w3-bar-item w3-button tablink" id="btnAmazonPage">Amazon Page</button>
-                <button class="w3-bar-item w3-button tablink" id="btnHelp">Help</button>
+        
+        <div style="margin-left:120px; height:310px;" class="content-panel">
+            <div id="ManageInv" class="w3-container panel" style="display:none">
+                <div class="w3-center w3-teal mb-2">All Inventory</div>
+                <label class="w3-small">Search:</label>
+                <input class="w3-input w3-border" id="txtSearchManage" type="text">
+                <button class="w3-btn w3-block w3-teal mt-2" id="btnSearchManage">Search</button>
+                <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkManage">
+                <label class=" w3-small">Open in New Tab</label>
+
+                <button class="w3-btn w3-block w3-teal btn-extract" id="btnExtractManage">Extract Table</button>
             </div>
             
-            <div style="margin-left:120px; height:310px;" class="content-panel">
-                <div id="ManageInv" class="w3-container panel" style="display:none">
-                    <div class="w3-center w3-teal mb-2">All Inventory</div>
-                    <label class="w3-small">Search:</label>
-                    <input class="w3-input w3-border" id="txtSearchManage" type="text">
-                    <button class="w3-btn w3-block w3-teal mt-2" id="btnSearchManage">Search</button>
-                    <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkManage">
-                    <label class=" w3-small">Open in New Tab</label>
+            <div id="PriceAlert" class="w3-container panel" style="display:none">
+                <div class="w3-center w3-teal mb-2">Price Alerts</div>
+                <label class="w3-small">Search:</label>
+                <input class="w3-input w3-border" id="txtSearchPrice" type="text">
+                <button class="w3-btn w3-block w3-teal mt-2" id="btnSearchPrice">Search</button>
+                <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkPrice">
+                <label class=" w3-small">Open in New Tab</label>
 
-                    <button class="w3-btn w3-block w3-teal btn-extract" id="btnExtractManage">Extract Table</button>
-                </div>
-                
-                <div id="PriceAlert" class="w3-container panel" style="display:none">
-                    <div class="w3-center w3-teal mb-2">Price Alerts</div>
-                    <label class="w3-small">Search:</label>
-                    <input class="w3-input w3-border" id="txtSearchPrice" type="text">
-                    <button class="w3-btn w3-block w3-teal mt-2" id="btnSearchPrice">Search</button>
-                    <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkPrice">
-                    <label class=" w3-small">Open in New Tab</label>
+                <button class="w3-btn w3-block w3-teal btn-extract" id="btnExtractPrice">Extract Table</button>
+            </div>
+            
+            <div id="UploadFeed" class="w3-container panel" style="display:none">
+                <div class="w3-center w3-teal mb-2">Upload Feed</div>
+                <label>Purge and Replace:</label>
+                <button class="w3-btn w3-block w3-red mt-2" id="btnUploadStatus">Disabled</button>
+                <a href="#" class="w3-small w3-text-blue" id="gotoUploadFeed">Goto Page >>></a>
+            </div>
 
-                    <button class="w3-btn w3-block w3-teal btn-extract" id="btnExtractPrice">Extract Table</button>
-                </div>
-                
-                <div id="UploadFeed" class="w3-container panel" style="display:none">
-                    <div class="w3-center w3-teal mb-2">Upload Feed</div>
-                    <label>Purge and Replace:</label>
-                    <button class="w3-btn w3-block w3-red mt-2" id="btnUploadStatus">Disabled</button>
-                    <a href="#" class="w3-small w3-text-blue" id="gotoUploadFeed">Goto Page >>></a>
-                </div>
+            <div id="AmazonPage" class="w3-container panel" style="display:none">
+                <div class="w3-center w3-teal mb-2">Amazon Page</div>
+                <label class="w3-small">Search by ASIN:</label>
+                <input class="w3-input w3-border" id="txtSearchAmazon" type="text">
+                <button class="w3-btn w3-block w3-orange mt-2" id="btnOlp">Offer-Listing Page</button>
+                <button class="w3-btn w3-block w3-green mt-2" id="btnMdp">Main Detail Page</button>
+                <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkAmazon">
+                <label class=" w3-small">Open in New Tab</label>
+                <span class="w3-text-red" id="alert-msg"></span>
+            </div>
+            <div id="Help" class="w3-container panel" style="display:none">
+                <span class="w3-normal"><strong>AMZ Chrome Bot</strong> <span class="w3-small" id="appVersion"></span></span>
 
-                <div id="AmazonPage" class="w3-container panel" style="display:none">
-                    <div class="w3-center w3-teal mb-2">Amazon Page</div>
-                    <label class="w3-small">Search by ASIN:</label>
-                    <input class="w3-input w3-border" id="txtSearchAmazon" type="text">
-                    <button class="w3-btn w3-block w3-orange mt-2" id="btnOlp">Offer-Listing Page</button>
-                    <button class="w3-btn w3-block w3-green mt-2" id="btnMdp">Main Detail Page</button>
-                    <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkAmazon">
-                    <label class=" w3-small">Open in New Tab</label>
-                    <span class="w3-text-red" id="alert-msg"></span>
+                <span class="w3-small mt-5"><strong>General:</strong></span><br>
+                <span class="w3-tiny">You must login first to Seller Central before you can use the "All Inventory, Price Alerts, Upload Feed" options.</span><hr>
 
-                    <div class="shorcut">
-                        <span class="w3-small">Shortcut:</span><br>
-                        <span class="w3-tiny">OLP - Ctrl + Right Arrow</span><br>
-                        <span class="w3-tiny">MDP - Ctrl + Left Arrow</span>
-                    </div>
-                </div>
-                <div id="Help" class="w3-container panel" style="display:none">
-                    <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
-                        <p class="w3-small">For Manage Inventory, Price Alerts, Upload Feed</p>
-                        <p class="w3-tiny">Need to login first to use these features.</p>
-                    </div>
-                </div>
+                <span class="w3-small"><strong>Keyboard Shorcuts:</strong></span><br>
+                <span class="w3-tiny">Show Extension [Ctrl+Shift+Space]</span><br>
+                <span class="w3-tiny">Change Menus [Ctrl+ "1-5"]</span><br>
+                <span class="w3-tiny">Offer-Listing Page [Ctrl + RightArrow]</span><br>
+                <span class="w3-tiny">Main Detail Page [Ctrl + LeftArrow]</span>
             </div>
         </div>
     </div>

@@ -1,5 +1,10 @@
 chrome.runtime.onInstalled.addListener(function() {
+  let { version, name, description, author } = chrome.runtime.getManifest();
   chrome.storage.local.set({
+      version,
+      name,
+      author,
+      description,
       "copyShortcut": "enabled",
       "purgeReplaceStatus": "disabled",
       "shortcutAmazonNavigator": "enabled",

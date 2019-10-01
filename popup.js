@@ -1,10 +1,19 @@
 $(document).ready(function() {
+    setupUI();
     panelController();
     manageButtons();
     manageUploadFeed();
     manageAmazonPage();
     manageNewTab();
+    manageMenuShortcut();
 });
+
+function setupUI(){
+    chrome.storage.local.get(['version','author'], function(data){
+        $('#appVersion').text(`v${data.version}`);
+        $('#appAuthor').text(`Created by ${data.author}`);
+    })
+}
 
 function panelController(){
     $(':button').click(function(){
@@ -35,7 +44,7 @@ function panelController(){
             modifyPanel('btnUploadFeed', 'UploadFeed');
             manageExtractButtons(3);
         }else{
-            modifyPanel('btnAmazonPage', 'AmazonPage');
+            modifyPanel('btnHelp', 'Help');
             manageExtractButtons(0);
         }
     }
@@ -201,5 +210,21 @@ function manageExtractButtons(index){
         $("#btnExtractManage").attr("disabled", true);
         $("#btnExtractPrice").attr("disabled", true);
         $("#btnUploadStatus").attr("disabled", true);
+    }
+}
+
+function manageMenuShortcut(){
+    document.body.onkeyup = function(e){
+        if(e.ctrlKey && e.keyCode == 50){
+            modifyPanel('btnPriceAlert', 'PriceAlert');
+        }else if(e.ctrlKey && e.keyCode == 49){
+            modifyPanel('btnManageInv', 'ManageInv');
+        }else if(e.ctrlKey && e.keyCode == 51){
+            modifyPanel('btnUploadFeed', 'UploadFeed');
+        }else if(e.ctrlKey && e.keyCode == 52){
+            modifyPanel('btnAmazonPage', 'AmazonPage');
+        }else if(e.ctrlKey && e.keyCode == 53){
+            modifyPanel('btnHelp', 'Help');
+        }
     }
 }
