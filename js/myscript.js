@@ -1,14 +1,10 @@
 function uploadFeed(){
-    chrome.storage.local.get("priceAlertStatus", function(data) {
+    chrome.storage.local.get("purgeReplaceStatus", function(data) {
         let uploadHeader = $('span.a-color-error').text();
         let elem = '#vlw-container > div.a-row > div.a-column.a-span9 > div.a-row.a-expander-container.a-expander-section-container.a-section-expander-container';
         let status;
         if( uploadHeader === 'Purge and Replace Your Inventory'){
-            if(data.priceAlertStatus === undefined){
-                $(elem).hide();
-                chrome.storage.local.set({"priceAlertStatus": "disabled"});
-                status = "disabled";
-            }else if(data.priceAlertStatus === "disabled"){
+            if(data.purgeReplaceStatus === "disabled"){
                 $(elem).hide();
                 status = "disabled";
             }else{

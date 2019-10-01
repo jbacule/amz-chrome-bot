@@ -3,6 +3,7 @@ $(document).ready(function() {
     manageButtons();
     manageUploadFeed();
     manageAmazonPage();
+    manageNewTab();
 });
 
 function panelController(){
@@ -15,6 +16,8 @@ function panelController(){
             modifyPanel(this.id, 'UploadFeed');
         }else if (this.id == 'btnAmazonPage') {
             modifyPanel(this.id, 'AmazonPage');
+        }else if (this.id == 'btnHelp') {
+            modifyPanel(this.id, 'Help');
         }
     });
 
@@ -24,12 +27,16 @@ function panelController(){
         let tabData = tabs[0];
         if(tabData.title === "Manage Inventory - Price Alerts"){
             modifyPanel('btnPriceAlert', 'PriceAlert');
+            manageExtractButtons(2);
         }else if(tabData.title === "Manage Inventory"){
             modifyPanel('btnManageInv', 'ManageInv');
+            manageExtractButtons(1);
         }else if(tabData.url.indexOf('sellercentral.amazon.com/listing/upload') >= 0){
             modifyPanel('btnUploadFeed', 'UploadFeed');
+            manageExtractButtons(3);
         }else{
             modifyPanel('btnAmazonPage', 'AmazonPage');
+            manageExtractButtons(0);
         }
     }
 }
@@ -57,7 +64,13 @@ function manageButtons(){
     });
     $('#btnSearchManage').click(function(){
         let searchText = $('#txtSearchManage').val();
-        chrome.tabs.update({url: `https://sellercentral.amazon.com/inventory/ref=xx_invmgr_dnav_xx?search:${searchText}`});
+        chrome.storage.local.get("manageNewTab", function(data) {
+            if(data.manageNewTab==="enabled"){
+                chrome.tabs.create({url: `https://sellercentral.amazon.com/inventory/ref=xx_invmgr_dnav_xx?search:${searchText}`});
+            }else{
+                chrome.tabs.update({url: `https://sellercentral.amazon.com/inventory/ref=xx_invmgr_dnav_xx?search:${searchText}`});
+            }
+        });
         window.close();
     });
     // Price Alert Page
@@ -75,14 +88,20 @@ function manageButtons(){
     });
     $('#btnSearchPrice').click(function(){
         let searchText = $('#txtSearchPrice').val();
-        chrome.tabs.update({url: `https://sellercentral.amazon.com/inventory?viewId=PRICEALERTS&ref_=myi_pa_vl_fba&search:${searchText}`});
+        chrome.storage.local.get("priceNewTab", function(data) {
+            if(data.priceNewTab==="enabled"){
+                chrome.tabs.create({url: `https://sellercentral.amazon.com/inventory?viewId=PRICEALERTS&ref_=myi_pa_vl_fba&search:${searchText}`});
+            }else{
+                chrome.tabs.update({url: `https://sellercentral.amazon.com/inventory?viewId=PRICEALERTS&ref_=myi_pa_vl_fba&search:${searchText}`});
+            }
+        });
         window.close();
     });
 }
 
 function manageUploadFeed(){
-    chrome.storage.local.get("priceAlertStatus", function(data) {
-        if(data.priceAlertStatus==="enabled"){
+    chrome.storage.local.get("purgeReplaceStatus", function(data) {
+        if(data.purgeReplaceStatus==="enabled"){
             $("#btnUploadStatus").html('Disabled');
             $(`#btnUploadStatus`).removeClass('w3-red').addClass('w3-blue');
         }else{
@@ -92,8 +111,8 @@ function manageUploadFeed(){
     });
 
     $("#btnUploadStatus").on("click",function() {
-        chrome.storage.local.get("priceAlertStatus", function(data) {
-            let status = data.priceAlertStatus;
+        chrome.storage.local.get("purgeReplaceStatus", function(data) {
+            let status = data.purgeReplaceStatus;
             let newStatus;
             if(status==="enabled"){
                 newStatus = "disabled";
@@ -104,7 +123,7 @@ function manageUploadFeed(){
                 $("#btnUploadStatus").html('Disabled');
                 $(`#btnUploadStatus`).removeClass('w3-red').addClass('w3-blue');
             }
-            chrome.storage.local.set({"priceAlertStatus": newStatus});
+            chrome.storage.local.set({"purgeReplaceStatus": newStatus});
     
             // reload page
             chrome.tabs.update({url: `https://sellercentral.amazon.com/listing/upload?ref_=xx_upload_tnav_status`});
@@ -114,7 +133,7 @@ function manageUploadFeed(){
         });
     });
     $('#gotoUploadFeed').click(function(){
-        chrome.tabs.update({url: `https://sellercentral.amazon.com/listing/upload?ref_=xx_upload_tnav_status`});
+        chrome.tabs.create({url: `https://sellercentral.amazon.com/listing/upload?ref_=xx_upload_tnav_status`});
     });
 }
 
@@ -125,12 +144,62 @@ function manageAmazonPage(){
             $("#alert-msg").text("Invalid ASIN!");
         }else{
             $("#alert-msg").text("");
-            if(this.id==="btnOlp"){
-                chrome.tabs.update({url: `https://www.amazon.com/gp/offer-listing/${txtSearchAmazon}`});
-            }else{
-                chrome.tabs.update({url: `https://www.amazon.com/dp/${txtSearchAmazon}`});
-            }
+            chrome.storage.local.get("amazonNewTab", function(data) {
+                if(data.amazonNewTab==="enabled"){
+                    if(this.id==="btnOlp"){
+                        chrome.tabs.create({url: `https://www.amazon.com/gp/offer-listing/${txtSearchAmazon}`});
+                    }else{
+                        chrome.tabs.create({url: `https://www.amazon.com/dp/${txtSearchAmazon}`});
+                    }
+                }else{
+                    if(this.id==="btnOlp"){
+                        chrome.tabs.update({url: `https://www.amazon.com/gp/offer-listing/${txtSearchAmazon}`});
+                    }else{
+                        chrome.tabs.update({url: `https://www.amazon.com/dp/${txtSearchAmazon}`});
+                    }
+                }
+            });
             window.close();
         }
     });
+}
+
+function manageNewTab(){
+    chrome.storage.local.get(['manageNewTab', 'priceNewTab','amazonNewTab'], function(data){
+        data.manageNewTab === "enabled" ? $('#chkManage').prop('checked', true) : $('#chkManage').prop('checked', false);
+        data.priceNewTab === "enabled" ? $('#chkPrice').prop('checked', true) : $('#chkPrice').prop('checked', false);
+        data.amazonNewTab === "enabled" ? $('#chkAmazon').prop('checked', true) : $('#chkAmazon').prop('checked', false);
+    })
+    $('input:checkbox').change(function(){
+        if (this.id === 'chkManage') {
+            let newTabStatus = $('#chkManage').prop('checked') ? "enabled" : "disabled";
+            chrome.storage.local.set({'manageNewTab' : newTabStatus});
+        }else if (this.id === 'chkPrice') {
+            let newTabStatus = $('#chkPrice').prop('checked') ? "enabled" : "disabled";
+            chrome.storage.local.set({'priceNewTab' : newTabStatus});
+        }else if (this.id === 'chkAmazon') {
+            let newTabStatus = $('#chkAmazon').prop('checked') ? "enabled" : "disabled";
+            chrome.storage.local.set({'amazonNewTab' : newTabStatus});
+        }
+    });
+}
+
+function manageExtractButtons(index){
+    if(index==1){
+        $("#btnExtractManage").attr("disabled", false);
+        $("#btnExtractPrice").attr("disabled", true);
+        $("#btnUploadStatus").attr("disabled", true);
+    }else if(index==2){
+        $("#btnExtractManage").attr("disabled", true);
+        $("#btnExtractPrice").attr("disabled", false);
+        $("#btnUploadStatus").attr("disabled", true);
+    }else if(index==3){
+        $("#btnExtractManage").attr("disabled", true);
+        $("#btnExtractPrice").attr("disabled", true);
+        $("#btnUploadStatus").attr("disabled", false);
+    }else{
+        $("#btnExtractManage").attr("disabled", true);
+        $("#btnExtractPrice").attr("disabled", true);
+        $("#btnUploadStatus").attr("disabled", true);
+    }
 }

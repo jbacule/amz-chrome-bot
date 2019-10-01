@@ -1,8 +1,11 @@
 chrome.runtime.onInstalled.addListener(function() {
   chrome.storage.local.set({
       "copyShortcut": "enabled",
-      "priceAlertStatus": "enabled",
+      "purgeReplaceStatus": "disabled",
       "shortcutAmazonNavigator": "enabled",
+      "manageNewTab": "enabled",
+      "priceNewTab": "enabled",
+      "amazonNewTab": "enabled"
     });
 });
 
