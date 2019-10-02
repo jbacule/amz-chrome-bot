@@ -1,4 +1,5 @@
 uploadFeed();
+
 chrome.storage.local.get("pageEnabled", function(data) {
 	if(data.pageEnabled === "manageInventory"){
 		copyToClipboard(manageInventory());
@@ -7,19 +8,15 @@ chrome.storage.local.get("pageEnabled", function(data) {
 	}
 });
 
-chrome.storage.local.get("copyShortcut", function(data) {
-	if(data.copyShortcut === "enabled"){
-		document.body.onkeyup = function(e){
-			if(e.ctrlKey && e.keyCode == 13){ //keyboard shortcut: ctrl key + enter
-				if(document.title === "Manage Inventory"){
-					copyToClipboard(manageInventory());	
-					showNotification("Copy","Manage Inventory Copied!");
-				}else{
-					copyToClipboard(priceAlerts());
-					showNotification("Copy","Manage Inventory Copied!");
-				}
-			}
-		}	
+$(window).keydown(function(e) {
+    if(e.ctrlKey && e.keyCode == 13){ //keyboard shortcut: ctrl key + enter
+		if(document.title === "Manage Inventory"){
+			copyToClipboard(manageInventory());	
+			showNotification("Hi!","Manage Inventory Data Extracted!");
+		}else{
+			copyToClipboard(priceAlerts());
+			showNotification("Hi!","Price Alert Data Extracted!");
+		}
 	}
 });
 

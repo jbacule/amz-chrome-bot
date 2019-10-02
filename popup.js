@@ -43,6 +43,9 @@ function panelController(){
         }else if(tabData.url.indexOf('sellercentral.amazon.com/listing/upload') >= 0){
             modifyPanel('btnUploadFeed', 'UploadFeed');
             manageExtractButtons(3);
+        }else if(tabData.title.indexOf('Amazon.com') >= 0){
+            modifyPanel('btnAmazonPage', 'AmazonPage');
+            manageExtractButtons(0);
         }else{
             modifyPanel('btnHelp', 'Help');
             manageExtractButtons(0);
@@ -148,6 +151,7 @@ function manageUploadFeed(){
 
 function manageAmazonPage(){
     $('#btnOlp,#btnMdp').click(function(){
+        let button = this.id;
         let txtSearchAmazon = $('#txtSearchAmazon').val();
         if(txtSearchAmazon === "" || txtSearchAmazon.substring(0,2) !== "B0"){
             $("#alert-msg").text("Invalid ASIN!");
@@ -155,13 +159,13 @@ function manageAmazonPage(){
             $("#alert-msg").text("");
             chrome.storage.local.get("amazonNewTab", function(data) {
                 if(data.amazonNewTab==="enabled"){
-                    if(this.id==="btnOlp"){
+                    if(button==="btnOlp"){
                         chrome.tabs.create({url: `https://www.amazon.com/gp/offer-listing/${txtSearchAmazon}`});
                     }else{
                         chrome.tabs.create({url: `https://www.amazon.com/dp/${txtSearchAmazon}`});
                     }
                 }else{
-                    if(this.id==="btnOlp"){
+                    if(button==="btnOlp"){
                         chrome.tabs.update({url: `https://www.amazon.com/gp/offer-listing/${txtSearchAmazon}`});
                     }else{
                         chrome.tabs.update({url: `https://www.amazon.com/dp/${txtSearchAmazon}`});
