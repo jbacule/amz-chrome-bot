@@ -13,7 +13,7 @@ $(window).keydown(function(e) {
 		if(document.title === "Manage Inventory"){
 			copyToClipboard(manageInventory());	
 			showNotification("Hi!","Manage Inventory Data Extracted!");
-		}else{
+		}else if(document.title === "Manage Inventory - Price Alerts"){
 			copyToClipboard(priceAlerts());
 			showNotification("Hi!","Price Alert Data Extracted!");
 		}
