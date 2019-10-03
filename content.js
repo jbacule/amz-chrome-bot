@@ -20,6 +20,44 @@ $(window).keydown(function(e) {
 	}
 });
 
+if(document.URL.indexOf('https://sellercentral.amazon.com/listing/status') > -1){
+	//upload status page
+	let onProgessCount = 0;
+	let batchIds = "";
+	jQuery.each($('td[data-column="status"]'), (index, item) => {
+		let batchid = $(item).find('div[data-column="feed_status"]').attr('data-row');
+		let status = $(item).find('div[data-column="feed_status"] > div > span').text();
+		
+		if(status.trim() === "Upload Status In Progress"){
+			onProgessCount = onProgessCount + 1;
+			batchIds =+ batchid + "\n";
+		}
+	});
+	setTimeout(function(){
+		showNotification("Hey!",`Upload Status: ${onProgessCount} Ongoing\nBatch Ids:\n${batchIds}`);
+	},1000);
+}else if(document.URL.indexOf('sellercentral.amazon.com/productsearch') > -1 ){
+	//old add product page
+	jQuery.each($('a[data-csm="seeAllProductDetailsClick"]'), (index, item) => {
+		let url = $(item).attr('href');
+		let asin = url.substring(url.length-10,url.length)
+		$(item).html(`ASIN: ${asin}`);
+	});
+}else if(document.URL.indexOf('sellercentral.amazon.com/product-search/search')>-1){
+	//new add product page
+	setTimeout(function(){
+		jQuery.each($('div.content.kat-row.row-container'), (index, item) => {
+			let url = $(item).find('a').attr('href');
+			let asin = url.substring(url.length-10,url.length);
+			let source = $(item).find('section.kat-col-xs-6.search-row-identifier-attributes').html();
+			$(item).find('section.kat-col-xs-6.search-row-identifier-attributes').html( source + `<p class="attribute"><span class="bold">ASIN</span>: ${asin}</p>`)
+		});
+	},1000);
+}
+
+
+
+
 chrome.storage.local.get("shortcutAmazonNavigator", function(data) {
 	if(data.shortcutAmazonNavigator === "enabled"){
 		document.body.onkeyup = function(e){
