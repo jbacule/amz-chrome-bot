@@ -7,7 +7,6 @@ chrome.runtime.onInstalled.addListener(function() {
       description,
       "copyShortcut": "enabled",
       "purgeReplaceStatus": "disabled",
-      "shortcutAmazonNavigator": "enabled",
       "manageNewTab": "enabled",
       "priceNewTab": "enabled",
       "amazonNewTab": "enabled"

@@ -3,7 +3,7 @@
 
 <head>
     <title>AMZ Chrome Bot</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/w3.css">
     <script src="js/jquery.js"></script>
     <script src="popup.js"></script>
@@ -13,8 +13,8 @@
 <body>
     <div class="w3-bar w3-card-2">
         <div class="w3-sidebar w3-bar-block w3-dark-grey" style="width:120px; height:310px;">
-            <div class="w3-bar-item w3-blue-grey">
-                <img src="images/icon32.png"><span><strong> Menu</strong></span>
+            <div class="w3-bar-item w3-border-bottom">
+                <img src="images/icon32.png"><span><strong> MENU</strong></span>
             </div>
             <button class="w3-bar-item w3-button tablink" id="btnManageInv">All Inventory</button>
             <button class="w3-bar-item w3-button tablink" id="btnPriceAlert">Price Alerts</button>
@@ -27,7 +27,7 @@
         <div style="margin-left:120px; height:310px;" class="content-panel">
             <div id="ManageInv" class="w3-container panel" style="display:none">
                 <div class="w3-center w3-teal mb-2">All Inventory</div>
-                <label class="w3-small">Search:</label>
+                <label class="w3-small">Search (SKU, ASIN, UPC):</label>
                 <input class="w3-input w3-border" id="txtSearchManage" type="text">
                 <button class="w3-btn w3-block w3-teal mt-2" id="btnSearchManage">Search</button>
                 <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkManage">
@@ -38,7 +38,7 @@
             
             <div id="PriceAlert" class="w3-container panel" style="display:none">
                 <div class="w3-center w3-teal mb-2">Price Alerts</div>
-                <label class="w3-small">Search:</label>
+                <label class="w3-small">Search (SKU, ASIN, UPC):</label>
                 <input class="w3-input w3-border" id="txtSearchPrice" type="text">
                 <button class="w3-btn w3-block w3-teal mt-2" id="btnSearchPrice">Search</button>
                 <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkPrice">
@@ -61,22 +61,28 @@
                 <button class="w3-btn w3-block w3-orange mt-2" id="btnOlp">Offer-Listing Page</button>
                 <button class="w3-btn w3-block w3-green mt-2" id="btnMdp">Main Detail Page</button>
                 <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkAmazon">
-                <label class=" w3-small">Open in New Tab</label>
-                <span class="w3-text-red" id="alert-msg"></span>
+                <label class=" w3-small">Open in New Tab</label><br>
+                <span class="w3-text-white w3-red" id="alert-msg"></span>
             </div>
             <div id="Help" class="w3-container panel" style="display:none">
-                <span class="w3-normal"><strong>AMZ Chrome Bot</strong> <span class="w3-small" id="appVersion"></span></span>
+                <span class="w3-normal"><strong>AMZ Chrome Bot</strong> <span class="w3-small" id="appVersion"></span></span><br>
 
                 <span class="w3-small mt-5"><strong>General:</strong></span><br>
                 <span class="w3-tiny">You must login first to Seller Central before you can use the "All Inventory, Price Alerts, Upload Feed" options.</span><br><br>
 
-                <span class="w3-small"><strong>Keyboard Shorcuts:</strong></span><br>
+                <span class="w3-small"><strong>Keyboard Shortcuts:</strong></span><br>
                 <span class="w3-tiny">Show Extension [Ctrl+Shift+Space]</span><br>
                 <span class="w3-tiny">Change Menus [Ctrl + "1-5"]</span><br>
-                <span class="w3-tiny">Extract All Inventory [Ctrl + Enter]</span><br>
+                <span class="w3-tiny">Extract Manage Inventory [Ctrl + Enter]</span><br>
                 <span class="w3-tiny">Extract Price Alerts [Ctrl + Enter]</span><br>
-                <span class="w3-tiny">Offer-Listing Page [Ctrl + RightArrow]</span><br>
-                <span class="w3-tiny">Main Detail Page [Ctrl + LeftArrow]</span>
+                <span class="w3-tiny">Goto Offer-Listing [Ctrl + RightArrow]</span><br>
+                <span class="w3-tiny">Goto Main Detail Page [Ctrl + LeftArrow]</span><br><br>
+                
+                <span class="w3-small"><strong>Updates:</strong></span><br>
+                <span class="w3-tiny">[ v1.3.8 ]</span><br>
+                <span class="w3-tiny">- changed UI and Font</span><br>
+                <span class="w3-tiny">- added ASIN in old & new Add Product</span><br>
+                <span class="w3-tiny">- added notif in Upload Status Page</span>
             </div>
         </div>
     </div>
