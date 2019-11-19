@@ -1,12 +1,10 @@
 {
   "name": "AMZ Chrome Bot",
-  "version": "1.3.8",
+  "version": "1.4.1",
   "author": "shujo",
   "description": "Navigate, search & get data from Seller Central and Amazon website.",
   "permissions": [
-    "declarativeContent",
     "notifications",
-    "background",
     "tabs",
     "storage",
     "activeTab"
