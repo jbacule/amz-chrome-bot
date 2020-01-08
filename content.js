@@ -7,6 +7,9 @@ chrome.storage.local.get("pageEnabled", function(data) {
 	}else if(data.pageEnabled === "priceAlerts"){
 		copyToClipboard(priceAlerts());
 		showNotification("Hello!","Price Alert Data Extracted!");
+	}else if(data.pageEnabled === "amazonPage"){
+		copyToClipboard(amazonDetailPage());
+		showNotification("Wazzup!","Amazon Product Details Extracted!");
 	}
 	chrome.storage.local.set({'pageEnabled':'done'})
 });
@@ -19,6 +22,9 @@ $(window).keydown(function(e) {
 		}else if(document.title === "Manage Inventory - Price Alerts"){
 			copyToClipboard(priceAlerts());
 			showNotification("Hi!","Price Alert Data Extracted!");
+		}else if(window.location.href.indexOf('/dp/B0') > -1){
+			copyToClipboard(amazonDetailPage());
+		    showNotification("Wazzup!","Amazon Product Details Extracted!");
 		}
 	}
 

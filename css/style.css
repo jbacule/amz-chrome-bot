@@ -25,7 +25,10 @@ body{
 .btn-extract{
     margin-top: 40%;
 }
-
+.btnExtractPDP{
+    margin-top: 10%;
+    font-size: 12px;
+}
 #Help{
   height: 100%;
   overflow: auto;

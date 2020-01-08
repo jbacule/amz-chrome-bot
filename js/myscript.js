@@ -16,6 +16,23 @@ function uploadFeed(){
     });
 }
 
+function amazonDetailPage(){
+	let mergeData = "";
+    let brand = $('#bylineInfo_feature_div > div > a').attr("href").split("/")[1];
+    let category = verifyData($('#wayfinding-breadcrumbs_feature_div').text());
+    let childTitle = verifyData($('#imgTagWrapperId > img').attr("alt"));
+    let parentTitle = verifyData($('#productTitle').text());
+    let mainImage = verifyData($('#imgTagWrapperId > img').attr("src"));
+    let bullets = [];
+    $('#feature-bullets > ul > li').each(function(){
+    let bullet = verifyData($(this).text());
+        bullets.push(bullet)
+    });
+    let description = verifyData($('#productDescription').text());
+
+    return brand + "\t" + category + "\t" + parentTitle + "\t" + childTitle + "\t" + mainImage + "\t" + description + "\t" + bullets.join("|");
+ }
+
 function priceAlerts(){
 	let data = "SKU\tSTATUS\tSTATUS2\tASIN\tTITLE\tQTY\tPrice\tMin\tMax\tFullfilledBy\n";
 	document.querySelectorAll("table.a-bordered.a-horizontal-stripes.mt-table > tbody > tr.mt-row").forEach((item)=>{

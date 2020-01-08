@@ -50,6 +50,12 @@ function panelController(){
             modifyPanel('btnHelp', 'Help');
             manageExtractButtons(0);
         }
+
+        if(tabData.url.indexOf("dp/B0") >= 0){
+            $("#btnExtractAmazon").attr("disabled", false);
+        }else{
+            $("#btnExtractAmazon").attr("disabled", true);
+        }
     }
 }
 
@@ -108,6 +114,19 @@ function manageButtons(){
             }
         });
         window.close();
+    });
+
+    $('#btnExtractAmazon').click(function(){
+        chrome.storage.local.set({"pageEnabled": "amazonPage"});
+        chrome.tabs.executeScript({
+            file: "content.js"
+        });
+        $("#btnExtractAmazon").attr("disabled", true);
+        $("#btnExtractAmazon").html("Copied!");
+        setInterval(function(){
+            $("#btnExtractAmazon").attr("disabled", false);
+            $("#btnExtractAmazon").html("Extract Details");
+        },2000);
     });
 }
 
@@ -201,6 +220,7 @@ function manageExtractButtons(index){
     if(index==1){
         $("#btnExtractManage").attr("disabled", false);
         $("#btnExtractPrice").attr("disabled", true);
+        $("#btnUploadStatus").attr("disabled", true);
         $("#btnUploadStatus").attr("disabled", true);
     }else if(index==2){
         $("#btnExtractManage").attr("disabled", true);
