@@ -20,7 +20,7 @@
         "https://sellercentral.amazon.com/*",
         "https://www.amazon.com/*"
       ],
-      "js": ["js/jquery.js", "js/myscript.js", "content.js"]
+      "js": ["js/jquery.js", "js/myscript.js", "js/velcroDetector.js", "content.js"]
     }
   ],
   "browser_action": {

@@ -21,8 +21,8 @@
             <button class="w3-bar-item w3-button tablink" id="btnPriceAlert">Price Alerts</button>
             <button class="w3-bar-item w3-button tablink" id="btnUploadFeed">Upload Feed</button>
             <button class="w3-bar-item w3-button tablink" id="btnAmazonPage">Amazon Page</button>
+            <button class="w3-bar-item w3-button tablink" id="btnOtherTools">Other Tools</button>
             <button class="w3-bar-item w3-button tablink" id="btnHelp">Help</button>
-            <span class="w3-bar-item w3-tiny w3-display-bottommiddle" id="appAuthor">created by shujo</div>
         </div>
         
         <div style="margin-left:120px; height:310px;" class="content-panel">
@@ -92,6 +92,19 @@
                 <span class="w3-tiny">Goto Offer-Listing [Ctrl + RightArrow]</span><br>
                 <span class="w3-tiny">Goto Main Detail Page [Ctrl + LeftArrow]</span><br>
                 <span class="w3-tiny">Extract Amazon D-Page [Ctrl + Enter]</span><br>
+            </div>
+
+            <div id="OtherTools" class="w3-container panel" style="display:none">
+                <div class="w3-center w3-teal mb-2">Other Amazon Tools</div>
+
+                <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkVelcroDetector">
+                <label class=" w3-small">Velcro Detector</label><br>
+                <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkNoImgDetector">
+                <label class=" w3-small">No Image Detector</label><br>
+                <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkAddProductExtractor">
+                <label class=" w3-small">Add Product Detail Extractor</label>
+                <hr>
+                <button class="w3-btn w3-block w3-teal btnExtractPDP" id="btnCopyAllUrls">Copy All Tab Urls</button>
             </div>
         </div>
     </div>

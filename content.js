@@ -1,5 +1,12 @@
 uploadFeed();
 
+chrome.storage.local.get("velcroDetectorStatus", function(data){
+	if(data.velcroDetectorStatus === "enabled"){
+		console.log('velcro detector enabled')
+		velcroDetector();
+	}
+})
+
 chrome.storage.local.get("pageEnabled", function(data) {
 	if(data.pageEnabled === "manageInventory"){
 		copyToClipboard(manageInventory());

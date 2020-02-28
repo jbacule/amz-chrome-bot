@@ -29,6 +29,8 @@ function panelController(){
             modifyPanel(this.id, 'AmazonPage');
         }else if (this.id == 'btnHelp') {
             modifyPanel(this.id, 'Help');
+        }else if (this.id == 'btnOtherTools') {
+            modifyPanel(this.id, 'OtherTools');
         }
     });
 
@@ -106,7 +108,6 @@ function manageButtons(){
         }
     });    
 
-
     // Price Alert Page
     $('#btnExtractPrice').click(function(){
         chrome.storage.local.set({"pageEnabled": "priceAlerts"});
@@ -144,6 +145,16 @@ function manageButtons(){
             $("#btnExtractAmazon").html("Extract Details");
         },2000);
     });
+
+    // chrome.tabs.query({currentWindow: true},function(tabs){
+    //     let data = tabs.map(e => {
+    //         return {
+    //             url: e.url,
+    //             title: e.title
+    //         }
+    //     })
+    //     console.log(data)
+    // })
 }
 
 function manageUploadFeed(){
@@ -213,26 +224,45 @@ function manageAmazonPage(){
 }
 
 function manageNewTab(){
-    chrome.storage.local.get(['manageNewTab', 'priceNewTab','amazonNewTab','notifyStatus'], function(data){
+    chrome.storage.local.get(['manageNewTab', 'priceNewTab','amazonNewTab','notifyStatus','velcroDetectorStatus','noImgDetectorStatus','addProductExtractorStatus'], function(data){
         data.manageNewTab === "enabled" ? $('#chkManage').prop('checked', true) : $('#chkManage').prop('checked', false);
         data.priceNewTab === "enabled" ? $('#chkPrice').prop('checked', true) : $('#chkPrice').prop('checked', false);
         data.amazonNewTab === "enabled" ? $('#chkAmazon').prop('checked', true) : $('#chkAmazon').prop('checked', false);
         data.notifyStatus === "enabled" ? $('#chkUploadNotification').prop('checked', true) : $('#chkUploadNotification').prop('checked', false);
+
+        data.velcroDetectorStatus === "enabled" ? $('#chkVelcroDetector').prop('checked', true) : $('#chkVelcroDetector').prop('checked', false);
+        data.noImgDetectorStatus === "enabled" ? $('#chkNoImgDetector').prop('checked', true) : $('#chkNoImgDetector').prop('checked', false);
+        data.addProductExtractorStatus === "enabled" ? $('#chkAddProductExtractor').prop('checked', true) : $('#chkAddProductExtractor').prop('checked', false);
     })
     $('input:checkbox').change(function(){
         if (this.id === 'chkManage') {
             let newTabStatus = $('#chkManage').prop('checked') ? "enabled" : "disabled";
             chrome.storage.local.set({'manageNewTab' : newTabStatus});
+        
         }else if (this.id === 'chkPrice') {
             let newTabStatus = $('#chkPrice').prop('checked') ? "enabled" : "disabled";
             chrome.storage.local.set({'priceNewTab' : newTabStatus});
+        
         }else if (this.id === 'chkAmazon') {
             let newTabStatus = $('#chkAmazon').prop('checked') ? "enabled" : "disabled";
             chrome.storage.local.set({'amazonNewTab' : newTabStatus});
+        
         }else if (this.id === 'chkUploadNotification') {
             let newTabStatus = $('#chkUploadNotification').prop('checked') ? "enabled" : "disabled";
-            console.log(newTabStatus)
             chrome.storage.local.set({'notifyStatus' : newTabStatus});
+        
+        }else if (this.id === 'chkVelcroDetector') {
+            let newTabStatus = $('#chkVelcroDetector').prop('checked') ? "enabled" : "disabled";
+            chrome.storage.local.set({'velcroDetectorStatus' : newTabStatus});
+        
+        }else if (this.id === 'chkNoImgDetector') {
+            let newTabStatus = $('#chkNoImgDetector').prop('checked') ? "enabled" : "disabled";
+            chrome.storage.local.set({'noImgDetectorStatus' : newTabStatus});
+        
+        }else if (this.id === 'chkAddProductExtractor') {
+            let newTabStatus = $('#chkAddProductExtractor').prop('checked') ? "enabled" : "disabled";
+            chrome.storage.local.set({'addProductExtractorStatus' : newTabStatus});
+        
         }
     });
 }
