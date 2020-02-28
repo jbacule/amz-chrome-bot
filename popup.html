@@ -17,6 +17,7 @@
                 <img src="images/icon32.png"><span><strong> MENU</strong></span>
             </div>
             <button class="w3-bar-item w3-button tablink" id="btnManageInv">All Inventory</button>
+            <button class="w3-bar-item w3-button tablink" id="btnAddProduct">Add Product</button>
             <button class="w3-bar-item w3-button tablink" id="btnPriceAlert">Price Alerts</button>
             <button class="w3-bar-item w3-button tablink" id="btnUploadFeed">Upload Feed</button>
             <button class="w3-bar-item w3-button tablink" id="btnAmazonPage">Amazon Page</button>
@@ -35,6 +36,16 @@
 
                 <button class="w3-btn w3-block w3-teal btn-extract" id="btnExtractManage">Extract Table</button>
             </div>
+
+            <div id="AddProduct" class="w3-container panel" style="display:none">
+                <div class="w3-center w3-teal mb-2">Add Product</div>
+                <label style="font-size: 10px;">Enter Valid Product IDs(ASIN/EAN/UPC)</label>
+                <textarea class="w3-input w3-border" id="addProductIDs" style="resize:none; height: 120px; font-size: 10px;"></textarea>
+
+                <label class="w3-small">Enter Limit(Default: 100)</label>
+                <input type="number" class="w3-input w3-border" id="addProductLimit" value="100">
+                <button class="w3-btn w3-block w3-teal btnExtractPDP" id="btnOpenAddProduct">Open</button>
+            </div>
             
             <div id="PriceAlert" class="w3-container panel" style="display:none">
                 <div class="w3-center w3-teal mb-2">Price Alerts</div>
@@ -51,6 +62,8 @@
                 <div class="w3-center w3-teal mb-2">Upload Feed</div>
                 <label>Purge and Replace:</label>
                 <button class="w3-btn w3-block w3-red mt-2" id="btnUploadStatus">Disabled</button>
+                <input class="w3-check w3-small" type="checkbox" checked="checked" id="chkUploadNotification">
+                <label class=" w3-small">Enable/Disabled Notification</label><br>
                 <a href="#" class="w3-small w3-text-blue" id="gotoUploadFeed">Goto Page >>></a>
             </div>
 
@@ -73,7 +86,7 @@
 
                 <span class="w3-small"><strong>Keyboard Shortcuts:</strong></span><br>
                 <span class="w3-tiny">Show Extension [Ctrl+Shift+Space]</span><br>
-                <span class="w3-tiny">Change Menus [Ctrl + "1-5"]</span><br>
+                <span class="w3-tiny">Change Menus [Ctrl + "1-6"]</span><br>
                 <span class="w3-tiny">Extract Manage Inventory [Ctrl + Enter]</span><br>
                 <span class="w3-tiny">Extract Price Alerts [Ctrl + Enter]</span><br>
                 <span class="w3-tiny">Goto Offer-Listing [Ctrl + RightArrow]</span><br>

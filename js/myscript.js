@@ -1,5 +1,5 @@
 function uploadFeed(){
-    chrome.storage.local.get("purgeReplaceStatus", function(data) {
+    chrome.storage.local.get(["purgeReplaceStatus","notifyStatus"], function(data) {
         let uploadHeader = $('span.a-color-error').text();
         let elem = '#vlw-container > div.a-row > div.a-column.a-span9 > div.a-row.a-expander-container.a-expander-section-container.a-section-expander-container';
         let status;
@@ -11,7 +11,9 @@ function uploadFeed(){
                 $(elem).show();
                 status = "enabled";
             }
-            showNotification('Reminder',`Purge & Replace was ${status}!`)
+            if(data.notifyStatus === "enabled"){
+            	showNotification('Reminder',`Purge & Replace was ${status}!`)	
+            }
         }
     });
 }

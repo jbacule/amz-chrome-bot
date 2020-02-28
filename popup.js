@@ -19,6 +19,8 @@ function panelController(){
     $(':button').click(function(){
         if (this.id == 'btnManageInv') {
             modifyPanel(this.id, 'ManageInv');
+        }else if (this.id == 'btnAddProduct') {
+            modifyPanel(this.id, 'AddProduct');
         }else if (this.id == 'btnPriceAlert') {
             modifyPanel(this.id, 'PriceAlert');
         }else if (this.id == 'btnUploadFeed') {
@@ -91,6 +93,20 @@ function manageButtons(){
         });
         window.close();
     });
+    //Add Product Page
+    $('#btnOpenAddProduct').click(function(){
+        let productIDs = $('#addProductIDs').val().split('\n');
+        let usedLimit = productIDs.length <= $('#addProductLimit').val() ? productIDs.length : $('#addProductLimit').val();
+        let limit = productIDs.length > 100 ? 100 : usedLimit;
+        for(let x=0; x<limit; x++){
+            let productID = productIDs[x].trim()
+            if(productID != "" && productID.length > 9){
+                chrome.tabs.create({url: `https://sellercentral.amazon.com/productsearch?q=${productID}&ref_=xx_prodsrch_cont_prodsrch`});
+            }
+        }
+    });    
+
+
     // Price Alert Page
     $('#btnExtractPrice').click(function(){
         chrome.storage.local.set({"pageEnabled": "priceAlerts"});
@@ -197,10 +213,11 @@ function manageAmazonPage(){
 }
 
 function manageNewTab(){
-    chrome.storage.local.get(['manageNewTab', 'priceNewTab','amazonNewTab'], function(data){
+    chrome.storage.local.get(['manageNewTab', 'priceNewTab','amazonNewTab','notifyStatus'], function(data){
         data.manageNewTab === "enabled" ? $('#chkManage').prop('checked', true) : $('#chkManage').prop('checked', false);
         data.priceNewTab === "enabled" ? $('#chkPrice').prop('checked', true) : $('#chkPrice').prop('checked', false);
         data.amazonNewTab === "enabled" ? $('#chkAmazon').prop('checked', true) : $('#chkAmazon').prop('checked', false);
+        data.notifyStatus === "enabled" ? $('#chkUploadNotification').prop('checked', true) : $('#chkUploadNotification').prop('checked', false);
     })
     $('input:checkbox').change(function(){
         if (this.id === 'chkManage') {
@@ -212,6 +229,10 @@ function manageNewTab(){
         }else if (this.id === 'chkAmazon') {
             let newTabStatus = $('#chkAmazon').prop('checked') ? "enabled" : "disabled";
             chrome.storage.local.set({'amazonNewTab' : newTabStatus});
+        }else if (this.id === 'chkUploadNotification') {
+            let newTabStatus = $('#chkUploadNotification').prop('checked') ? "enabled" : "disabled";
+            console.log(newTabStatus)
+            chrome.storage.local.set({'notifyStatus' : newTabStatus});
         }
     });
 }
@@ -239,15 +260,17 @@ function manageExtractButtons(index){
 
 function manageMenuShortcut(){
     document.body.onkeyup = function(e){
-        if(e.ctrlKey && e.keyCode == 50){
+        if(e.ctrlKey && e.keyCode == 51){
             modifyPanel('btnPriceAlert', 'PriceAlert');
         }else if(e.ctrlKey && e.keyCode == 49){
             modifyPanel('btnManageInv', 'ManageInv');
-        }else if(e.ctrlKey && e.keyCode == 51){
-            modifyPanel('btnUploadFeed', 'UploadFeed');
+        }else if(e.ctrlKey && e.keyCode == 50){
+            modifyPanel('btnAddProduct', 'AddProduct');
         }else if(e.ctrlKey && e.keyCode == 52){
-            modifyPanel('btnAmazonPage', 'AmazonPage');
+            modifyPanel('btnUploadFeed', 'UploadFeed');
         }else if(e.ctrlKey && e.keyCode == 53){
+            modifyPanel('btnAmazonPage', 'AmazonPage');
+        }else if(e.ctrlKey && e.keyCode == 54){
             modifyPanel('btnHelp', 'Help');
         }
     }
