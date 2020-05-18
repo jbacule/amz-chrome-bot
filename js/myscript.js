@@ -1,4 +1,4 @@
-function uploadFeed(){
+ function uploadFeed(){
     chrome.storage.local.get(["purgeReplaceStatus","notifyStatus"], function(data) {
         let uploadHeader = $('span.a-color-error').text();
         let elem = '#vlw-container > div.a-row > div.a-column.a-span9 > div.a-row.a-expander-container.a-expander-section-container.a-section-expander-container';
@@ -24,7 +24,8 @@ function amazonDetailPage(){
     let category = verifyData($('#wayfinding-breadcrumbs_feature_div').text());
     let childTitle = verifyData($('#imgTagWrapperId > img').attr("alt"));
     let parentTitle = verifyData($('#productTitle').text());
-    let mainImage = verifyData($('#imgTagWrapperId > img').attr("src"));
+    let mainImage = verifyData($('#imgTagWrapperId > img').attr("data-old-hires"));
+    let dimension = $('#imgTagWrapperId > img').height().toFixed(0) + "x" + $('#imgTagWrapperId > img').width().toFixed(0);
     let bullets = [];
     $('#feature-bullets > ul > li').each(function(){
     let bullet = verifyData($(this).text());
@@ -32,7 +33,7 @@ function amazonDetailPage(){
     });
     let description = verifyData($('#productDescription').text());
 
-    return brand + "\t" + category + "\t" + parentTitle + "\t" + childTitle + "\t" + mainImage + "\t" + description + "\t" + bullets.join("|");
+    return brand + "\t" + category + "\t" + parentTitle + "\t" + childTitle + "\t" + mainImage + "\t" + dimension + "\t" + description + "\t" + description.length + "\t" + bullets.join("|");
  }
 
 function priceAlerts(){

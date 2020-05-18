@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amz Detail Page Bulk Extractor</title>
+    <link rel="stylesheet" href="css/w3.css">
+    <script src="js/jquery.js"></script>
+    <script src="js/options.js"></script>
+</head>
+<body>
+    <div class="w3-container">
+        <h1>Amz Detail Page Bulk Extractor</h1>
+        <p>This is an option page where you manipulate your ASINs by opening it directly in chrome tabs and automatically get the amazon details then put it in the table.</p>
+        <hr>
+        <label>Enter ASINs Here:</label>
+        <textarea class="w3-input w3-border" id="asinList" style="resize:none; height: 120px; font-size: 15px;"></textarea>
+        <button class="w3-btn w3-round w3-teal w3-margin-top" id="btnOpenASINList">Open</button>
+        <button class="w3-btn w3-round w3-red w3-margin-top" id="btnClearASINList">Clear</button>
+        <button class="w3-btn w3-round w3-grey w3-text-white w3-margin-top" id="btnCloseTabs">Close All Amazon Tabs</button>
+        <div style="display: inline;">
+            <div style=" float: right;">
+                <p>Limit: <span id="asinLimit">100</span> | Input ASINs: <span id="asinInput">0</span></p>
+            </div>
+        </div>
+
+        <hr>
+
+        
+        <div class="w3-responsive">
+            <div style="display: inline;">
+                <div style="float: left;">
+                    <h3>Result</h3>
+                </div>
+                <div style="float: right;">
+                    <button class="w3-btn w3-round w3-blue w3-margin-bottom" id="btnLoadTable">Load</button>
+                    <button class="w3-btn w3-round w3-red w3-margin-bottom" id="btnResetTable">Reset</button>
+                    <button class="w3-btn w3-round w3-blue w3-margin-bottom" id="btnCopyTable">Copy to Clipboard</button>
+                </div>
+            </div>
+            <table class="w3-table-all w3-hoverable w3-tiny">
+                <thead>
+                    <tr class="w3-teal">
+                        <th>ASIN</th>
+                        <th>Brand</th>
+                        <th>Title</th>
+                        <th>Image</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Bullets</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    
+                </tbody>
+            </table>
+        </div>
+     </div>
+</body>
+</html>

@@ -1,9 +1,58 @@
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
+
+	if (request.greeting == "hello"){
+		let url = $(location).attr('href');
+		let asin = url.substring(url.indexOf('dp/B0')+3,url.indexOf('dp/B0')+13)
+		let brand = $('#bylineInfo').text();
+		let category = verifyData($('#wayfinding-breadcrumbs_feature_div').text());
+		let childTitle = verifyData($('#imgTagWrapperId > img').attr("alt"));
+		let parentTitle = verifyData($('#productTitle').text());
+		let mainImage = verifyData($('#imgTagWrapperId > img').attr("data-old-hires"));
+		let dimension = $('#imgTagWrapperId > img').height().toFixed(0) + "x" + $('#imgTagWrapperId > img').width().toFixed(0);
+		let bullets = [];
+		$('#feature-bullets > ul > li').each(function(){
+		let bullet = verifyData($(this).text());
+			bullets.push(bullet)
+		});
+		let description = verifyData($('#productDescription').text());
+
+		let objectData = {
+			asin,
+			brand,
+			category,
+			childTitle,
+			parentTitle,
+			mainImage,
+			dimension,
+			bullets: bullets.join('|'),
+			description
+		}
+		sendResponse({farewell: JSON.stringify(objectData) });
+	}
+	
+});
+
 uploadFeed();
 
 chrome.storage.local.get("velcroDetectorStatus", function(data){
 	if(data.velcroDetectorStatus === "enabled"){
-		console.log('velcro detector enabled')
+		console.log('velcro detector enabled');
 		velcroDetector();
+	}
+})
+
+chrome.storage.local.get("noImgDetectorStatus", function(data){
+	if(data.noImgDetectorStatus === "enabled"){
+		console.log('No Image detector enabled');
+		noImgDetector();
+	}
+})
+
+chrome.storage.local.get("addProductExtractorStatus", function(data){
+	if(data.addProductExtractorStatus === "enabled"){
+		console.log('Add Product Extractor enabled');
+		addProductExtractor();
 	}
 })
 
@@ -31,6 +80,7 @@ $(window).keydown(function(e) {
 			showNotification("Hi!","Price Alert Data Extracted!");
 		}else if(window.location.href.indexOf('/dp/B0') > -1){
 			copyToClipboard(amazonDetailPage());
+			console.log(amazonDetailPage());
 		    showNotification("Wazzup!","Amazon Product Details Extracted!");
 		}
 	}

@@ -17,8 +17,9 @@ function velcroDetector(){
 	        document.title = "Velcro Found!";
 	        errorIcon();
 	    }else{
+            console.log("No Velcro found on Amazon!");
+            document.title = "No Velcro Found!";
 	        successIcon();
-	        console.log("No Velcro found on Amazon!");
 	    }
 	}
 }

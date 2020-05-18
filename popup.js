@@ -146,15 +146,25 @@ function manageButtons(){
         },2000);
     });
 
-    // chrome.tabs.query({currentWindow: true},function(tabs){
-    //     let data = tabs.map(e => {
-    //         return {
-    //             url: e.url,
-    //             title: e.title
-    //         }
-    //     })
-    //     console.log(data)
-    // })
+    $('#btnCopyAllUrls').click(function(){
+        chrome.tabs.query({currentWindow: true},function(tabs){
+            let data = tabs.map(e => `${e.url}|${e.title}`)
+            console.log(data);
+            copyToClipboard(data.join("\n"))
+        })
+        chrome.storage.local.set({"pageEnabled": "amazonPage"});
+        chrome.tabs.executeScript({
+            file: "content.js"
+        });
+        $("#btnCopyAllUrls").attr("disabled", true);
+        $("#btnCopyAllUrls").html("Copied!");
+        setInterval(function(){
+            $("#btnCopyAllUrls").attr("disabled", false);
+            $("#btnCopyAllUrls").html("Extract Details");
+        },2000);
+    });
+
+    
 }
 
 function manageUploadFeed(){
@@ -230,9 +240,10 @@ function manageNewTab(){
         data.amazonNewTab === "enabled" ? $('#chkAmazon').prop('checked', true) : $('#chkAmazon').prop('checked', false);
         data.notifyStatus === "enabled" ? $('#chkUploadNotification').prop('checked', true) : $('#chkUploadNotification').prop('checked', false);
 
-        data.velcroDetectorStatus === "enabled" ? $('#chkVelcroDetector').prop('checked', true) : $('#chkVelcroDetector').prop('checked', false);
-        data.noImgDetectorStatus === "enabled" ? $('#chkNoImgDetector').prop('checked', true) : $('#chkNoImgDetector').prop('checked', false);
-        data.addProductExtractorStatus === "enabled" ? $('#chkAddProductExtractor').prop('checked', true) : $('#chkAddProductExtractor').prop('checked', false);
+        // $('input[name=mygroup][value="chkVelcroDetector"]').prop('checked', true);
+        data.velcroDetectorStatus === "enabled" ? $('input[name="radioTools"][value="chkVelcroDetector"]').prop('checked', true) : $('input[name="radioTools"][value="chkVelcroDetector"]').prop('checked', false);
+        data.noImgDetectorStatus === "enabled" ? $('input[name="radioTools"][value="chkNoImgDetector"]').prop('checked', true) : $('input[name="radioTools"][value="chkNoImgDetector"]').prop('checked', false);
+        data.addProductExtractorStatus === "enabled" ? $('input[name="radioTools"][value="chkAddProductExtractor"]').prop('checked', true) : $('input[name="radioTools"][value="chkAddProductExtractor"]').prop('checked', false);
     })
     $('input:checkbox').change(function(){
         if (this.id === 'chkManage') {
@@ -251,18 +262,28 @@ function manageNewTab(){
             let newTabStatus = $('#chkUploadNotification').prop('checked') ? "enabled" : "disabled";
             chrome.storage.local.set({'notifyStatus' : newTabStatus});
         
-        }else if (this.id === 'chkVelcroDetector') {
-            let newTabStatus = $('#chkVelcroDetector').prop('checked') ? "enabled" : "disabled";
-            chrome.storage.local.set({'velcroDetectorStatus' : newTabStatus});
-        
-        }else if (this.id === 'chkNoImgDetector') {
-            let newTabStatus = $('#chkNoImgDetector').prop('checked') ? "enabled" : "disabled";
-            chrome.storage.local.set({'noImgDetectorStatus' : newTabStatus});
-        
-        }else if (this.id === 'chkAddProductExtractor') {
-            let newTabStatus = $('#chkAddProductExtractor').prop('checked') ? "enabled" : "disabled";
-            chrome.storage.local.set({'addProductExtractorStatus' : newTabStatus});
-        
+        }
+    });
+
+    $('input[type=radio][name=radioTools]').change(function() {
+        if (this.value == 'chkVelcroDetector') {
+            chrome.storage.local.set({
+                'velcroDetectorStatus' : 'enabled',
+                'noImgDetectorStatus' : 'disabled',
+                'addProductExtractorStatus' : 'disabled'
+            });
+        }else if (this.value == 'chkNoImgDetector') {
+            chrome.storage.local.set({
+                'velcroDetectorStatus' : 'disabled',
+                'noImgDetectorStatus' : 'enabled',
+                'addProductExtractorStatus' : 'disabled'
+            });
+        }else if (this.value == 'chkAddProductExtractor') {
+            chrome.storage.local.set({
+                'velcroDetectorStatus' : 'disabled',
+                'noImgDetectorStatus' : 'disabled',
+                'addProductExtractorStatus' : 'enabled'
+            });
         }
     });
 }
@@ -304,4 +325,13 @@ function manageMenuShortcut(){
             modifyPanel('btnHelp', 'Help');
         }
     }
+}
+
+function copyToClipboard(text){
+    const els = document.createElement('textarea');
+    els.value = text;
+    document.body.appendChild(els);
+    els.select();
+    document.execCommand('copy');
+    document.body.removeChild(els)
 }
