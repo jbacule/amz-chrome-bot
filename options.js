@@ -31,7 +31,6 @@ $(function(){
                       storageChange.newValue);
             chrome.storage.local.get(['amazonResults'], function(result){
                 let data = [].concat(...result.amazonResults.map(e => e))
-                console.log(data);
                 loadTable(data)
             })
         }
