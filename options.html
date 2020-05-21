@@ -3,24 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amz Detail Page Bulk Extractor</title>
+    <title>Bulk Data Extractor</title>
+    <link rel="stylesheet" href="css/option.css">
     <link rel="stylesheet" href="css/w3.css">
+    
     <script src="js/jquery.js"></script>
     <script src="options.js"></script>
 </head>
 <body>
+    <form class="w3-container" style="width: 300px; display: none;" id="authForm">
+        <p>
+            <label>Username</label>
+            <input class="w3-input w3-border" type="text" name="username" id="username">
+        </p>
+        <p>
+            <label>Password</label>
+            <input class="w3-input  w3-border" type="password" name="password" id="password">
+        </p>
+        <button class="w3-btn w3-teal" type="submit">Sign-in</button>
+    </form>
+
     <div class="w3-container">
-        <h1>Amz Detail Page Bulk Extractor</h1>
-        <p>This is an option page where you manipulate your ASINs by opening it directly in chrome tabs and automatically get the amazon details then put it in the table.</p>
+        <h1>Bulk Data Extractor</h1>
+        <p>This is an option page where you manipulate your product ids (UPC/ASIN) by opening it directly in chrome tabs and get the details then put it in the table.</p>
         <hr>
-        <label>Enter ASINs Here:</label>
+        <div style="display: inline;">
+            <div class="mb-2">Select Type:</div>
+            <input class="w3-check" type="radio" name="radioType" value="chkAmazon">
+            <label>Amazon Detail Page</label><br>
+            <input class="w3-check" type="radio" name="radioType" value="chkAddProduct">
+            <label>Add Product Page</label>
+        </div><br><br>
+
+        <label>Enter Product IDs Here:</label>
         <textarea class="w3-input w3-border" id="asinList" style="resize:none; height: 120px; font-size: 15px;"></textarea>
         <button class="w3-btn w3-round w3-teal w3-margin-top" id="btnOpenASINList">Open</button>
         <button class="w3-btn w3-round w3-red w3-margin-top" id="btnClearASINList">Clear</button>
-        <button class="w3-btn w3-round w3-grey w3-text-white w3-margin-top" id="btnCloseTabs">Close All Amazon Tabs</button>
+        <button class="w3-btn w3-round w3-grey w3-text-white w3-margin-top" id="btnCloseTabs">Close All Opened Tabs</button>
         <div style="display: inline;">
             <div style=" float: right;">
-                <p>Limit: <span id="asinLimit">100</span> | Input ASINs: <span id="asinInput">0</span></p>
+                <p><span>Amazon Page Limit: 100, Add Product Page Limit: 50</span> | Entered: <span id="asinInput">0</span></p>
             </div>
         </div>
 
@@ -33,14 +55,15 @@
                     <h3>Result</h3>
                 </div>
                 <div style="float: right;">
-                    <button class="w3-btn w3-round w3-blue w3-margin-bottom" id="btnLoadTable">Load</button>
-                    <button class="w3-btn w3-round w3-red w3-margin-bottom" id="btnResetTable">Reset</button>
-                    <button class="w3-btn w3-round w3-blue w3-margin-bottom" id="btnCopyTable">Copy to Clipboard</button>
+                    <input style="height: 38px; padding: 5px; top: 10px;" type="text" id="search" placeholder="Search">
+                    <button class="mb-2 w3-btn w3-round w3-blue" id="btnLoadTable">Load</button>
+                    <button class="mb-2 w3-btn w3-round w3-red" id="btnResetTable">Reset</button>
+                    <button class="mb-2 w3-btn w3-round w3-blue" id="btnCopyTable">Copy to Clipboard</button>
                 </div>
             </div>
             <table class="w3-table-all w3-hoverable w3-tiny">
                 <thead>
-                    <tr class="w3-teal">
+                    <tr class="w3-teal" id="tableHeader">
                         <th>ASIN</th>
                         <th>Brand</th>
                         <th>Title</th>

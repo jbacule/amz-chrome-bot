@@ -2,35 +2,103 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
 
 	if (request.greeting == "hello"){
+		let brand = $('#bylineInfo').text();
 		let url = $(location).attr('href');
 		let asin = url.substring(url.indexOf('dp/B0')+3,url.indexOf('dp/B0')+13)
-		let brand = $('#bylineInfo').text();
-		let category = verifyData($('#wayfinding-breadcrumbs_feature_div').text());
-		let childTitle = verifyData($('#imgTagWrapperId > img').attr("alt"));
-		let parentTitle = verifyData($('#productTitle').text());
-		let mainImage = verifyData($('#imgTagWrapperId > img').attr("data-old-hires"));
-		let dimension = $('#imgTagWrapperId > img').height().toFixed(0) + "x" + $('#imgTagWrapperId > img').width().toFixed(0);
-		let bullets = [];
-		$('#feature-bullets > ul > li').each(function(){
-		let bullet = verifyData($(this).text());
-			bullets.push(bullet)
-		});
-		let description = verifyData($('#productDescription').text());
+		if(brand.length){
+			let category = verifyData($('#wayfinding-breadcrumbs_feature_div').text());
+			let childTitle = verifyData($('#imgTagWrapperId > img').attr("alt"));
+			let parentTitle = verifyData($('#productTitle').text());
+			let mainImage = verifyData($('#imgTagWrapperId > img').attr("data-old-hires"));
+			let dimension = $('#imgTagWrapperId > img').height().toFixed(0) + "x" + $('#imgTagWrapperId > img').width().toFixed(0);
+			let bullets = [];
+			$('#feature-bullets > ul > li').each(function(){
+			let bullet = verifyData($(this).text());
+				bullets.push(bullet)
+			});
+			let description = verifyData($('#productDescription').text());
 
-		let objectData = {
-			asin,
-			brand,
-			category,
-			childTitle,
-			parentTitle,
-			mainImage,
-			dimension,
-			bullets: bullets.join('|'),
-			description
+			let objectData = {
+				asin,
+				brand,
+				category,
+				childTitle,
+				parentTitle,
+				mainImage,
+				dimension,
+				bullets: bullets.join('|'),
+				description
+			}
+			sendResponse({farewell: JSON.stringify(objectData) });
+		}else{
+			let objectData = {
+				asin,
+				brand: 'n/a',
+				category: 'n/a',
+				childTitle: 'n/a',
+				parentTitle: 'n/a',
+				mainImage: 'n/a',
+				dimension: 'n/a',
+				bullets:  'n/a',
+				description: 'n/a'
+			}
+			sendResponse({farewell: JSON.stringify(objectData) });
 		}
-		sendResponse({farewell: JSON.stringify(objectData) });
 	}
 	
+	if (request.greeting == "addProduct"){
+		let results = [];
+
+		let productId = $('div.search-input-container > kat-input-group > kat-input').attr('value');
+		let count = $('div.content.kat-row.row-container').length;
+		if(count){
+			jQuery.each($('div.content.kat-row.row-container'), (index, item) => {
+				let title = $(item).find('section.kat-col-xs-4.search-row-title > kat-link').attr('label');
+				let link = $(item).find('section.kat-col-xs-4.search-row-title > kat-link').attr('href');
+				let asin = link.substring(link.length-10, link.length);
+				let UPC = 'n/a';
+				let EAN = 'n/a';
+				
+				jQuery.each($(item).find('section.kat-col-xs-6.search-row-identifier-attributes > p'), (index, data) => {
+					let res = data.innerText;
+					if(res.includes('UPC')){
+						UPC = res.substring(5, res.length)
+					}
+					if(res.includes('EAN')){
+						EAN = res.substring(5, res.length)
+					}
+				})
+				
+				let salesRank = 'n/a';
+				let offers = 'n/a';
+				jQuery.each($(item).find('section.kat-col-xs-6.search-row-sales-attributes > p'), (index, data) => {
+					let res = data.innerText;
+					if(res.includes('Sales rank')){
+						salesRank = res.substring(11, res.length)
+					}
+					if(res.includes('Offers')){
+						offers = res.substring(8, res.length)
+					}
+				})
+				let status = count > 1 ? 'Duplicate' : 'Non-Duplicate';
+				let objData = { productId, asin, title, UPC, EAN, salesRank, offers, status };
+
+				results.push(JSON.stringify(objData))
+			})
+		}else{
+			results.push(JSON.stringify({
+				productId,
+				asin: 'n/a',
+				title: 'n/a',
+				UPC: 'n/a',
+				EAN: 'n/a',
+				salesRank: 'n/a',
+				offers: 'n/a',
+				status: 'Not Found'
+			}))
+		}
+		sendResponse({farewell: results });
+	}
 });
 
 uploadFeed();
