@@ -1,6 +1,6 @@
 $(function(){
 
-    chrome.storage.local.get(['amazonResults','addProductResults', 'optionConfig'], function(result){
+    chrome.storage.local.get(['amazonResults','addProductResults', 'optionConfig', 'closeTabs'], function(result){
         if(result.amazonResults === undefined){
             chrome.storage.local.set({ amazonResults: [] })
         }
@@ -9,8 +9,15 @@ $(function(){
             chrome.storage.local.set({ addProductResults: [] })
         }
 
+        if(result.closeTabs === undefined){
+            chrome.storage.local.set({ closeTabs: 'enabled' })
+            $("input#chkCloseTabs").prop("checked", true);
+        }else{
+            result.closeTabs === 'enabled' ? $("input#chkCloseTabs").prop("checked", true) : $("input#chkCloseTabs").prop("checked", false);
+        }
+
         if(result.optionConfig === undefined){
-            chrome.storage.local.set({ optionConfig: { type: 'chkAmazon'} }, function(){
+            chrome.storage.local.set({ optionConfig: { type: 'chkAmazon', closeTabs: 'enabled' } }, function(){
                 $("input[name=radioType][value='chkAmazon']").prop("checked", true);
             })
         }else{
@@ -32,8 +39,8 @@ $(function(){
     handleRefreshTable();
     handleResetTable();
     copyResults();
-
-    handleSubmit();
+    
+    handleOptionModal();
 
     chrome.storage.onChanged.addListener(function(changes, namespace) {
         for (var key in changes) {
@@ -86,9 +93,6 @@ function change_type(){
             <th>Description</th>
             <th>Bullets</th>`
         );
-        $("#tableHeader").removeClass('w3-blue')
-        $("#tableHeader").addClass('w3-teal')
-
         chrome.storage.local.get(['amazonResults'], function(result){
             let data = [].concat(...result.amazonResults.map(e => e))
             console.log(data);
@@ -106,8 +110,6 @@ function change_type(){
             <th>Offers</th>
             <th>Status</th>`
         );
-        $("#tableHeader").removeClass('w3-teal')
-        $("#tableHeader").addClass('w3-blue')
 
         chrome.storage.local.get(['addProductResults'], function(result){
             let data = [].concat(...result.addProductResults.map(e => e))
@@ -163,26 +165,30 @@ function handleOpenProductIDList(){
 
 function handleCloseTabs(){
     $('#btnCloseTabs').click(function(){
-        chrome.tabs.query({currentWindow: true}, callback);
-        function callback(tabs){
-            let type = $("input[name='radioType']:checked").val();
-            if(type === 'chkAmazon'){
-                for(let x in tabs){
-                    let tab = tabs[x];
-                    if(tab.url.indexOf('dp/B0') > -1){
-                        chrome.tabs.remove(tab.id);
-                    }
+        closeTabs()
+    })
+}
+
+function closeTabs(){
+    chrome.tabs.query({currentWindow: true}, callback);
+    function callback(tabs){
+        let type = $("input[name='radioType']:checked").val();
+        if(type === 'chkAmazon'){
+            for(let x in tabs){
+                let tab = tabs[x];
+                if(tab.url.indexOf('www.amazon.com') > -1){
+                    chrome.tabs.remove(tab.id);
                 }
-            }else if(type === 'chkAddProduct'){
-                for(let x in tabs){
-                    let tab = tabs[x];
-                    if(tab.url.indexOf('sellercentral.amazon.com/product') > -1){
-                        chrome.tabs.remove(tab.id);
-                    }
+            }
+        }else if(type === 'chkAddProduct'){
+            for(let x in tabs){
+                let tab = tabs[x];
+                if(tab.url.indexOf('sellercentral.amazon.com/product') > -1){
+                    chrome.tabs.remove(tab.id);
                 }
             }
         }
-    })
+    }
 }
 
 function handleRefreshTable(){
@@ -196,8 +202,10 @@ function handleRefreshTable(){
             if(type === 'chkAmazon'){
                 let currentData = [];
                 let updatedData = [];
-                chrome.storage.local.get(['amazonResults'], function(result){
+                let closeTab;
+                chrome.storage.local.get(['amazonResults','closeTabs'], function(result){
                     currentData = result.amazonResults;
+                    closeTab = result.closeTabs
                 });
 
                 for(let x in tabs){
@@ -208,13 +216,18 @@ function handleRefreshTable(){
                     if(status === 'complete' && url > -1){
                         chrome.tabs.sendMessage(tab.id, { greeting: "hello" }, function(response) {
                             let newData = response.farewell;
-                            updatedData.push(newData)
+                            updatedData.push(newData);
                         });
                     }
                 }
                 setTimeout(function(){
                     currentData.push(updatedData);
                     chrome.storage.local.set({ amazonResults: currentData });
+
+                    //REMOVE TAB AFTER LOADED TO TABLE
+                    if(closeTab === 'enabled'){
+                        closeTabs()
+                    }
 
                     $("#btnLoadTable").attr("disabled", false);
                     $("#btnLoadTable").html("Load");
@@ -223,8 +236,10 @@ function handleRefreshTable(){
             }else if(type === 'chkAddProduct'){
                 let currentData = [];
                 let updatedData = [];
-                chrome.storage.local.get(['addProductResults'], function(result){
+                let closeTab;
+                chrome.storage.local.get(['addProductResults','closeTabs'], function(result){
                     currentData = result.addProductResults;
+                    closeTab = result.closeTabs
                 });
 
                 for(let x in tabs){
@@ -238,12 +253,17 @@ function handleRefreshTable(){
                             for(let y in newData){
                                 updatedData.push(newData[y])
                             }
-                        });
+                        }); 
                     }
                 }
                 setTimeout(function(){
                     currentData.push(updatedData);
                     chrome.storage.local.set({ addProductResults: currentData });
+
+                    //REMOVE TAB AFTER LOADED TO TABLE
+                    if(closeTab === 'enabled'){
+                        closeTabs()
+                    }
 
                     $("#btnLoadTable").attr("disabled", false);
                     $("#btnLoadTable").html("Load");
@@ -305,6 +325,7 @@ function loadTable(type, rows){
             );
         }
     }
+    $('#totalResult').html(`(${rows.length} Rows)`)
 }
 
 //COPY RESULTS TO CLIPBOARD
@@ -386,30 +407,25 @@ function showNotification(title, message){
 	chrome.runtime.sendMessage({type: "shownotification", opt: opt});
 };
 
-
-function handleSubmit(){
-    $('#authForm').submit(function (e){
-        e.preventDefault();
-        handleAuth();
+function handleOptionModal(){
+    $('#btnOption').click(function(){
+        document.getElementById('optionModal').style.display='block'
     })
-}
 
-function handleAuth(){
-    let username = $('#username').val();
-    let password = $('#password').val();
-
-    let reqBody = { userName: username, password }
-
-    fetch('https://plat-invoice-audit-server-demo.herokuapp.com/api/auth/signin', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(reqBody)
+    $('#btnCloseOption').click(function(){
+        document.getElementById('optionModal').style.display='none'
     })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => {
-        console.log(error);
+
+    $('input:checkbox').change(function(){
+
+        chrome.storage.local.get('closeTabs', function(result){
+            let res = result.closeTabs;
+            if(res === 'enabled'){
+                chrome.storage.local.set({ closeTabs: 'disabled' })
+            }else{
+                chrome.storage.local.set({ closeTabs: 'enabled' })
+            }
+        })
     });
+
 }

@@ -11,18 +11,6 @@
     <script src="options.js"></script>
 </head>
 <body>
-    <form class="w3-container" style="width: 300px; display: none;" id="authForm">
-        <p>
-            <label>Username</label>
-            <input class="w3-input w3-border" type="text" name="username" id="username">
-        </p>
-        <p>
-            <label>Password</label>
-            <input class="w3-input  w3-border" type="password" name="password" id="password">
-        </p>
-        <button class="w3-btn w3-teal" type="submit">Sign-in</button>
-    </form>
-
     <div class="w3-container">
         <h1>Bulk Data Extractor</h1>
         <p>This is an option page where you manipulate your product ids (UPC/ASIN) by opening it directly in chrome tabs and get the details then put it in the table.</p>
@@ -49,16 +37,17 @@
         <hr>
 
         
-        <div class="w3-responsive">
+        <div class="">
             <div style="display: inline;">
                 <div style="float: left;">
-                    <h3>Result</h3>
+                    <h3>Result <span id="totalResult"> (0 Rows)</span></h3>
                 </div>
                 <div style="float: right;">
                     <input style="height: 38px; padding: 5px; top: 10px;" type="text" id="search" placeholder="Search">
                     <button class="mb-2 w3-btn w3-round w3-blue" id="btnLoadTable">Load</button>
                     <button class="mb-2 w3-btn w3-round w3-red" id="btnResetTable">Reset</button>
                     <button class="mb-2 w3-btn w3-round w3-blue" id="btnCopyTable">Copy to Clipboard</button>
+                    <button class="mb-2 w3-btn w3-round w3-blue" id="btnOption">Option</button>
                 </div>
             </div>
             <table class="w3-table-all w3-hoverable w3-tiny">
@@ -73,11 +62,24 @@
                         <th>Bullets</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
-                    
-                </tbody>
+                <tbody id="tableBody"></tbody>
             </table>
         </div>
-     </div>
+
+        <div id="optionModal" class="w3-modal">
+            <div class="w3-modal-content w3-card-4"  style="width: 400px;">
+                <header class="w3-container w3-teal"> 
+                    <span id="btnCloseOption" 
+                    class="w3-button w3-display-topright">&times;</span>
+                    <h6>Option</h6>
+                </header>
+
+                <div class="w3-container w3-padding">
+                    <input class="w3-check w3-small" type="checkbox" id="chkCloseTabs">
+                    <label class=" w3-small">Close tabs after loading data to the table</label>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
