@@ -1,12 +1,16 @@
 $(function(){
 
-    chrome.storage.local.get(['amazonResults','addProductResults', 'optionConfig', 'closeTabs'], function(result){
+    chrome.storage.local.get(['amazonResults','addProductResults', 'optionConfig', 'closeTabs', 'amazonReviews'], function(result){
         if(result.amazonResults === undefined){
             chrome.storage.local.set({ amazonResults: [] })
         }
 
         if(result.addProductResults === undefined){
             chrome.storage.local.set({ addProductResults: [] })
+        }
+
+        if(result.amazonReviews === undefined){
+            chrome.storage.local.set({ amazonReviews: [] })
         }
 
         if(result.closeTabs === undefined){
@@ -41,6 +45,7 @@ $(function(){
     copyResults();
     
     handleOptionModal();
+    handleExportTable();
 
     chrome.storage.onChanged.addListener(function(changes, namespace) {
         for (var key in changes) {
@@ -57,6 +62,15 @@ $(function(){
     });
 });
 
+function handleExportTable(){
+    $("#exportTableToExcel").click(function(){
+        $("#resultTable").table2excel({
+            name:"Sheet1",
+            filename:`ExportTable-${Date.now()}`,
+            fileext:".xls"
+        });
+    })
+}
 function handleChangeResults(){
     let radioTypeValue = $("input[name='radioType']:checked").val();
     if(radioTypeValue === 'chkAmazon'){
@@ -65,12 +79,21 @@ function handleChangeResults(){
             console.log(data);
             loadTable(radioTypeValue, data)
         })
+        $('#categoryLimit').text(`Amazon Page Limit: 100`);
     }else if(radioTypeValue === 'chkAddProduct'){
         chrome.storage.local.get(['addProductResults'], function(result){
             let data = [].concat(...result.addProductResults.map(e => e))
             console.log(data);
             loadTable(radioTypeValue, data)
         })
+        $('#categoryLimit').text(`Add Product Page Limit: 50`);
+    }else if(radioTypeValue === 'chkAmazonReviews'){
+        chrome.storage.local.get(['amazonReviews'], function(result){
+            let data = [].concat(...result.amazonReviews.map(e => e))
+            console.log(data);
+            loadTable(radioTypeValue, data)
+        })
+        $('#categoryLimit').text(`Amazon Review Page Limit: 100`);
     }
 }
 
@@ -102,7 +125,7 @@ function change_type(){
     }else if (type === 'chkAddProduct') {
         $("#tableHeader").append(`
             <th>Search ID</th>
-            <th>ASN</th>
+            <th>ASIN</th>
             <th>Title</th>
             <th>UPC</th>
             <th>EAN</th>
@@ -117,6 +140,32 @@ function change_type(){
             loadTable(type, data)
         })
         chrome.storage.local.set({ optionConfig: { type: 'chkAddProduct'} })
+    }else if (type === 'chkAmazonReviews') {
+        $("#tableHeader").append(`
+            <th>ASIN</th>
+            <th>Brand</th>
+            <th>Title</th>
+            <th>Star Rating</th>
+            <th>Five Star Percent</th>
+            <th>Customer Rating</th>
+            <th>Review 1</th>
+            <th>Review 2</th>
+            <th>Review 3</th>
+            <th>Review 4</th>
+            <th>Review 5</th>
+            <th>Review 6</th>
+            <th>Review 7</th>
+            <th>Review 8</th>
+            <th>Review 9</th>
+            <th>Review 10</th>`
+        );
+
+        chrome.storage.local.get(['amazonReviews'], function(result){
+            let data = [].concat(...result.amazonReviews.map(e => e))
+            console.log(data);
+            loadTable(type, data)
+        })
+        chrome.storage.local.set({ optionConfig: { type: 'chkAmazonReviews'} })
     }
 }
 
@@ -129,7 +178,7 @@ function handleChangeProductIDList(){
         let type = $("input[name='radioType']:checked").val();
         if(type === 'chkAmazon' && filteredASINs.length > 100){
             showNotification('Warning!', `You've exceed ${filteredASINs.length-100} for limit number of Amazon Detail Page.\nExceed Product IDs will not be opened.`)
-        }else if(type === 'chkAddProduct' && filteredASINs.length > 50){
+        }else if(type === 'chkAddProduct' || type === 'chkAmazonReviews' && filteredASINs.length > 50){
             showNotification('Warning!', `You've exceed ${filteredASINs.length-50} for limit number of Add Product Page.\nExceed Product IDs will not be opened.`)
         }
     })
@@ -156,6 +205,8 @@ function handleOpenProductIDList(){
                 chrome.tabs.create({url: `https://www.amazon.com/dp/${asin}?ref=myi_title_dp&th=1&psc=1`, active: false })
             }else if(radioTypeValue === 'chkAddProduct'){
                 chrome.tabs.create({url: `https://sellercentral.amazon.com/product-search?q=${asin}&ref_=xx_prodsrch_cont_prodsrch&`, active: false })
+            }else if(radioTypeValue === 'chkAmazonReviews'){
+                chrome.tabs.create({url: `https://www.amazon.com/product-reviews/${asin}/ref=acr_dpx_hist_5?ie=UTF8&filterByStar=five_star&reviewerType=all_reviews#reviews-filter-bar`, active: false })
             }
         }
         $('#asinList').val('');
@@ -184,6 +235,13 @@ function closeTabs(){
             for(let x in tabs){
                 let tab = tabs[x];
                 if(tab.url.indexOf('sellercentral.amazon.com/product') > -1){
+                    chrome.tabs.remove(tab.id);
+                }
+            }
+        }else if(type === 'chkAmazonReviews'){
+            for(let x in tabs){
+                let tab = tabs[x];
+                if(tab.url.indexOf('www.amazon.com/product-reviews') > -1){
                     chrome.tabs.remove(tab.id);
                 }
             }
@@ -268,6 +326,40 @@ function handleRefreshTable(){
                     $("#btnLoadTable").attr("disabled", false);
                     $("#btnLoadTable").html("Load");
                 },3000)
+            }else if(type === 'chkAmazonReviews'){
+                let currentData = [];
+                let updatedData = [];
+                let closeTab;
+                chrome.storage.local.get(['amazonReviews','closeTabs'], function(result){
+                    currentData = result.amazonReviews;
+                    closeTab = result.closeTabs
+                });
+
+                for(let x in tabs){
+                    let tab = tabs[x];
+                    
+                    let status = tab.status;
+                    let url = tab.url.indexOf('www.amazon.com/product-reviews')
+                    if(status === 'complete' && url > -1){
+                        chrome.tabs.sendMessage(tab.id, { greeting: "amzReviews" }, function(response) {
+                            console.log(response)
+                            let newData = response.farewell;
+                            updatedData.push(newData);
+                        });
+                    }
+                }
+                setTimeout(function(){
+                    currentData.push(updatedData);
+                    chrome.storage.local.set({ amazonReviews: currentData });
+
+                    //REMOVE TAB AFTER LOADED TO TABLE
+                    if(closeTab === 'enabled'){
+                        closeTabs()
+                    }
+
+                    $("#btnLoadTable").attr("disabled", false);
+                    $("#btnLoadTable").html("Load");
+                },3000)
             }
         }
     })
@@ -283,6 +375,10 @@ function handleResetTable(){
             });
         }else if(type === 'chkAddProduct'){
             chrome.storage.local.set({addProductResults: []}, function(){
+                $("#tableBody > tr").remove()
+            });
+        }else if(type === 'chkAmazonReviews'){
+            chrome.storage.local.set({amazonReviews: []}, function(){
                 $("#tableBody > tr").remove()
             });
         }
@@ -324,6 +420,30 @@ function loadTable(type, rows){
                 "</tr>"
             );
         }
+    }else if(type === 'chkAmazonReviews'){
+        for (let index = 0; index < rows.length; index++) {
+            const row = JSON.parse(rows[index]);
+            $("#tableBody").append(
+                "<tr>" +
+                    "<td>" + row.asin + "</td>" +
+                    "<td>" + row.brand + "</td>" +
+                    "<td>" + row.title + "</td>" +
+                    "<td>" + row.starRating + "</td>" +
+                    "<td>" + row.fiveStarRating + "</td>" +
+                    "<td>" + row.customerRating + "</td>" +
+                    "<td>" + row.reviews.split("|")[0] + "</td>" +
+                    "<td>" + row.reviews.split("|")[1] + "</td>" +
+                    "<td>" + row.reviews.split("|")[2] + "</td>" +
+                    "<td>" + row.reviews.split("|")[3] + "</td>" +
+                    "<td>" + row.reviews.split("|")[4] + "</td>" +
+                    "<td>" + row.reviews.split("|")[5] + "</td>" +
+                    "<td>" + row.reviews.split("|")[6] + "</td>" +
+                    "<td>" + row.reviews.split("|")[7] + "</td>" +
+                    "<td>" + row.reviews.split("|")[8] + "</td>" +
+                    "<td>" + row.reviews.split("|")[9] + "</td>" +
+                "</tr>"
+            );
+        }
     }
     $('#totalResult').html(`(${rows.length} Rows)`)
 }
@@ -343,7 +463,6 @@ function copyResults(){
                     let e = JSON.parse(data[x]);
                     mergeData = mergeData + `${e.asin}\t${e.brand}\t${e.childTitle}\t${e.mainImage}\t${e.category}\t${e.description}\t${e.bullets}\n`
                 }
-                console.log(mergeData);
                 copyToClipboard(mergeData)
             });
         }else if(type === 'chkAddProduct'){
@@ -357,7 +476,19 @@ function copyResults(){
                     let e = JSON.parse(data[x]);
                     mergeData = mergeData + `'${e.productId}\t${e.asin}\t${e.title}\t'${e.UPC}\t'${e.EAN}\t${e.salesRank}\t${e.offers}\t${e.status}\n`;
                 }
-                console.log(mergeData);
+                copyToClipboard(mergeData)
+            });
+        }else if(type === 'chkAmazonReviews'){
+            chrome.storage.local.get('amazonReviews', function(result){
+                let data = [].concat(...result.amazonReviews.map(e => e));
+                let mergeData = '';
+                let header = 'ASIN\tBrand\tTitle\tStar Rating\t5 Star Percent\tCustomer Rating\tReview1\tReview2\tReview3\tReview4\tReview5\tReview6\tReview7\tReview8\tReview9\tReview10\n'; 
+                mergeData = mergeData + header;
+    
+                for(let x in data){
+                    let e = JSON.parse(data[x]);
+                    mergeData = mergeData + `${e.asin}\t${e.brand}\t${e.title}\t${e.starRating}\t${e.fiveStarRating}\t${e.customerRating}\t${e.reviews.split("|")[0]}\t${e.reviews.split("|")[1]}\t${e.reviews.split("|")[2]}\t${e.reviews.split("|")[3]}\t${e.reviews.split("|")[4]}\t${e.reviews.split("|")[5]}\t${e.reviews.split("|")[6]}\t${e.reviews.split("|")[7]}\t${e.reviews.split("|")[8]}\t${e.reviews.split("|")[9]}\n`;
+                }
                 copyToClipboard(mergeData)
             });
         }

@@ -99,6 +99,44 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		}
 		sendResponse({farewell: results });
 	}
+
+	if (request.greeting == "amzReviews"){
+		let asin = document.URL.substring(document.URL.indexOf('-reviews/')+9,document.URL.indexOf('-reviews/')+19);
+
+		let result = document.querySelector('div[role="main"');
+		if(result){
+			let brand = verifyData(document.querySelector('span#cr-arp-byline > a').innerText);
+			let title = verifyData(document.querySelector('div.a-row.product-title > h1 > a').innerText);
+			let starRating = verifyData(document.querySelector('span[data-hook="rating-out-of-text"]').innerText);
+			let fiveStarRating = verifyData(document.querySelector('table#histogramTable > tbody > tr:nth-child(1) > td:nth-child(3)').innerText);
+			let customerRating = verifyData(document.querySelector('div[data-hook="total-review-count"]').innerText);
+			let reviewsElem =document.querySelectorAll('span[data-hook="review-body"]');
+			let reviews = reviewsElem.length > 0 ? Array.from(reviewsElem).map(e => verifyData(e.innerText)).join("|") : "n/a";
+			let body = {
+				asin,
+				url: document.URL,
+				brand,
+				title,
+				starRating,
+				fiveStarRating,
+				customerRating,
+				reviews
+			}
+			sendResponse({farewell: JSON.stringify(body) });
+		}else{
+			let body = {
+				asin,
+				url: "n/a",
+				brand: "n/a",
+				title: "n/a",
+				starRating: "n/a",
+				fiveStarRating: "n/a",
+				customerRating: "n/a",
+				reviews: "n/a"
+			}
+			sendResponse({farewell: JSON.stringify(body) });
+		}
+	}
 });
 
 uploadFeed();

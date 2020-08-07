@@ -9,6 +9,7 @@
     
     <script src="js/jquery.js"></script>
     <script src="options.js"></script>
+    <script src="js/jquery.table2excel.min.js"></script>
 </head>
 <body>
     <div class="w3-container">
@@ -20,7 +21,9 @@
             <input class="w3-check" type="radio" name="radioType" value="chkAmazon">
             <label>Amazon Detail Page</label><br>
             <input class="w3-check" type="radio" name="radioType" value="chkAddProduct">
-            <label>Add Product Page</label>
+            <label>Add Product Page</label><br>
+            <input class="w3-check" type="radio" name="radioType" value="chkAmazonReviews">
+            <label>Amazon Reviews Page</label>
         </div><br><br>
 
         <label>Enter Product IDs Here:</label>
@@ -30,7 +33,7 @@
         <button class="w3-btn w3-round w3-grey w3-text-white w3-margin-top" id="btnCloseTabs">Close All Opened Tabs</button>
         <div style="display: inline;">
             <div style=" float: right;">
-                <p><span>Amazon Page Limit: 100, Add Product Page Limit: 50</span> | Entered: <span id="asinInput">0</span></p>
+                <p><span id="categoryLimit"></span> | Entered: <span id="asinInput">0</span></p>
             </div>
         </div>
 
@@ -50,7 +53,7 @@
                     <button class="mb-2 w3-btn w3-round w3-blue" id="btnOption">Option</button>
                 </div>
             </div>
-            <table class="w3-table-all w3-hoverable w3-tiny">
+            <table id="resultTable" class="w3-table-all w3-hoverable w3-tiny">
                 <thead>
                     <tr class="w3-teal" id="tableHeader">
                         <th>ASIN</th>
@@ -77,6 +80,7 @@
                 <div class="w3-container w3-padding">
                     <input class="w3-check w3-small" type="checkbox" id="chkCloseTabs">
                     <label class=" w3-small">Close tabs after loading data to the table</label>
+                    <button id="exportTableToExcel" class="w3-button w3-blue w3-small w3-block" style="margin-top: 10px;">Export Table</button>
                 </div>
             </div>
         </div>
