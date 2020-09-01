@@ -20,7 +20,7 @@
 
 function amazonDetailPage(){
 	let mergeData = "";
-    let brand = $('#bylineInfo_feature_div > div > a').attr("href").split("/")[1];
+    let brand = $('#bylineInfo').text().replace(/Visit the | Store/g,'');
     let category = verifyData($('#wayfinding-breadcrumbs_feature_div').text());
     let childTitle = verifyData($('#imgTagWrapperId > img').attr("alt"));
     let parentTitle = verifyData($('#productTitle').text());
@@ -28,9 +28,15 @@ function amazonDetailPage(){
     let dimension = $('#imgTagWrapperId > img').height().toFixed(0) + "x" + $('#imgTagWrapperId > img').width().toFixed(0);
     let bullets = [];
     $('#feature-bullets > ul > li').each(function(){
-    let bullet = verifyData($(this).text());
+    	let bullet = verifyData($(this).text());
         bullets.push(bullet)
-    });
+	});
+	document.querySelector('a.a-expander-header.a-declarative.a-expander-extend-header').click();
+	$('div.a-expander-content.a-expander-extend-content.a-expander-content-expanded > ul > li').each(function(){
+		let bullet = verifyData($(this).text());
+        bullets.push(bullet)
+	});
+
     let description = verifyData($('#productDescription').text());
 
     return brand + "\t" + category + "\t" + parentTitle + "\t" + childTitle + "\t" + mainImage + "\t" + dimension + "\t" + description + "\t" + description.length + "\t" + bullets.join("|");
