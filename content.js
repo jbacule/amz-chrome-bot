@@ -2,6 +2,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
 
 	if (request.greeting == "hello"){
+		if($('a.a-expander-header.a-declarative.a-expander-extend-header').length){
+			document.querySelector('a.a-expander-header.a-declarative.a-expander-extend-header').click();
+		}
+		
 		let brand = $('#bylineInfo').text().replace(/Visit the | Store/g,'');
 		let url = $(location).attr('href');
 		let asin = url.substring(url.indexOf('dp/B0')+3,url.indexOf('dp/B0')+13)
@@ -16,7 +20,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				let bullet = verifyData($(this).text());
 				bullets.push(bullet)
 			});
-			document.querySelector('a.a-expander-header.a-declarative.a-expander-extend-header').click();
 			$('div.a-expander-content.a-expander-extend-content.a-expander-content-expanded > ul > li').each(function(){
 				let bullet = verifyData($(this).text());
 				bullets.push(bullet)

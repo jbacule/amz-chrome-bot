@@ -1,6 +1,6 @@
 {
   "name": "AMZ Chrome Bot",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "author": "shujo",
   "description": "A simple chrome extension that will navigate, search & get data from Seller Central and Amazon website in every page loaded",
   "permissions": [
