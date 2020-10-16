@@ -145,6 +145,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			sendResponse({farewell: JSON.stringify(body) });
 		}
 	}
+	
+	if (request.greeting == "detailPage"){
+		let asin = document.URL.substring(document.URL.indexOf('asin=')+5,document.URL.indexOf('asin=')+15);
+		let sku = document.URL.substring(document.URL.indexOf('sku=')+4,document.URL.indexOf('&productType'));
+
+		let quantity = document.querySelector('kat-input#quantity') ? document.querySelector('kat-input#quantity').getAttribute('value') : "N/A";
+		let ht = document.querySelector('kat-input#fulfillment_latency') ? document.querySelector('kat-input#fulfillment_latency').getAttribute('value') : "N/A";
+		let shipmentTemplate = document.querySelector('kat-dropdown#merchant_shipping_group_name') ? document.querySelector('kat-dropdown#merchant_shipping_group_name').getAttribute('value') : "N/A";
+		
+		let body = { asin, sku, quantity, ht, shipmentTemplate }
+		sendResponse({farewell: JSON.stringify(body) });
+	}
+	
 });
 
 uploadFeed();

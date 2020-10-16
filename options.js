@@ -1,6 +1,10 @@
 $(function(){
 
-    chrome.storage.local.get(['amazonResults','addProductResults', 'optionConfig', 'closeTabs', 'amazonReviews'], function(result){
+    chrome.storage.local.get(['amazonResults','addProductResults', 'optionConfig', 'closeTabs', 'amazonReviews', 'detailPageResults'], function(result){
+        if(result.detailPageResults === undefined){
+            chrome.storage.local.set({ detailPageResults: [] })
+        }
+        
         if(result.amazonResults === undefined){
             chrome.storage.local.set({ amazonResults: [] })
         }
@@ -94,6 +98,13 @@ function handleChangeResults(){
             loadTable(radioTypeValue, data)
         })
         $('#categoryLimit').text(`Amazon Review Page Limit: 100`);
+    }else if(radioTypeValue === 'chkEditDetailPage'){
+        chrome.storage.local.get(['detailPageResults'], function(result){
+            let data = [].concat(...result.detailPageResults.map(e => e))
+            console.log(data);
+            loadTable(radioTypeValue, data)
+        })
+        $('#categoryLimit').text(`Amazon Edit Detail Page Limit: 100`);
     }
 }
 
@@ -166,6 +177,21 @@ function change_type(){
             loadTable(type, data)
         })
         chrome.storage.local.set({ optionConfig: { type: 'chkAmazonReviews'} })
+    }else if (type === 'chkEditDetailPage') {
+        $("#tableHeader").append(`
+            <th>ASIN</th>
+            <th>SKU</th>
+            <th>Quantity</th>
+            <th>Handling Time</th>
+            <th>Shipping Template</th>`
+        );
+
+        chrome.storage.local.get(['detailPageResults'], function(result){
+            let data = [].concat(...result.detailPageResults.map(e => e))
+            console.log(data);
+            loadTable(type, data)
+        })
+        chrome.storage.local.set({ optionConfig: { type: 'chkEditDetailPage'} })
     }
 }
 
@@ -180,6 +206,8 @@ function handleChangeProductIDList(){
             showNotification('Warning!', `You've exceed ${filteredASINs.length-100} for limit number of Amazon Detail Page.\nExceed Product IDs will not be opened.`)
         }else if(type === 'chkAddProduct' || type === 'chkAmazonReviews' && filteredASINs.length > 50){
             showNotification('Warning!', `You've exceed ${filteredASINs.length-50} for limit number of Add Product Page.\nExceed Product IDs will not be opened.`)
+        }else if(type === 'chkEditDetailPage' && filteredASINs.length > 100){
+            showNotification('Warning!', `You've exceed ${filteredASINs.length-100} for limit number of Add Product Page.\nExceed Product IDs will not be opened.`)
         }
     })
 }
@@ -194,7 +222,7 @@ function handleClearProductIDList(){
 function handleOpenProductIDList(){
     $('#btnOpenASINList').click(function(){
         let radioTypeValue = $("input[name='radioType']:checked").val();
-        let limit = radioTypeValue === 'chkAmazon' ? 100 : 50;
+        let limit = radioTypeValue === 'chkAmazon' || 'chkEditDetailPage' ? 100 : 50;
         let asins = $('#asinList').val().split('\n');
         let filteredASINs = asins.filter(asin => asin !== "");
         let maxASIN = filteredASINs.length > limit ? limit : filteredASINs.length;
@@ -207,6 +235,8 @@ function handleOpenProductIDList(){
                 chrome.tabs.create({url: `https://sellercentral.amazon.com/product-search?q=${asin}&ref_=xx_prodsrch_cont_prodsrch&`, active: false })
             }else if(radioTypeValue === 'chkAmazonReviews'){
                 chrome.tabs.create({url: `https://www.amazon.com/product-reviews/${asin}/ref=acr_dpx_hist_5?ie=UTF8&filterByStar=five_star&reviewerType=all_reviews#reviews-filter-bar`, active: false })
+            }else if(radioTypeValue === 'chkEditDetailPage'){
+                chrome.tabs.create({url: `https://sellercentral.amazon.com/abis/listing/edit?asin=${asin.split(',')[0]}&sku=${asin.split(',')[1]}&productType=&marketplaceID=ATVPDKIKX0DER&bannerType=NOBANNER&metadataVersion=&extraParam=edit&fwdRestrictedListing=restricted_edit_listing&fwdPTDNotLaunched=tile.restricted_ptd_notlaunched_listing#offer`, active: false })
             }
         }
         $('#asinList').val('');
@@ -242,6 +272,13 @@ function closeTabs(){
             for(let x in tabs){
                 let tab = tabs[x];
                 if(tab.url.indexOf('www.amazon.com/product-reviews') > -1){
+                    chrome.tabs.remove(tab.id);
+                }
+            }
+        }else if(type === 'chkEditDetailPage'){
+            for(let x in tabs){
+                let tab = tabs[x];
+                if(tab.url.indexOf('sellercentral.amazon.com/abis/listing/edit') > -1){
                     chrome.tabs.remove(tab.id);
                 }
             }
@@ -360,6 +397,40 @@ function handleRefreshTable(){
                     $("#btnLoadTable").attr("disabled", false);
                     $("#btnLoadTable").html("Load");
                 },3000)
+            }else if(type === 'chkEditDetailPage'){
+                let currentData = [];
+                let updatedData = [];
+                let closeTab;
+                chrome.storage.local.get(['detailPageResults','closeTabs'], function(result){
+                    currentData = result.detailPageResults;
+                    closeTab = result.closeTabs
+                });
+
+                for(let x in tabs){
+                    let tab = tabs[x];
+                    
+                    let status = tab.status;
+                    let url = tab.url.indexOf('sellercentral.amazon.com/abis/listing/edit')
+                    if(status === 'complete' && url > -1){
+                        chrome.tabs.sendMessage(tab.id, { greeting: "detailPage" }, function(response) {
+                            console.log(response)
+                            let newData = response.farewell;
+                            updatedData.push(newData);
+                        });
+                    }
+                }
+                setTimeout(function(){
+                    currentData.push(updatedData);
+                    chrome.storage.local.set({ detailPageResults: currentData });
+
+                    //REMOVE TAB AFTER LOADED TO TABLE
+                    if(closeTab === 'enabled'){
+                        closeTabs()
+                    }
+
+                    $("#btnLoadTable").attr("disabled", false);
+                    $("#btnLoadTable").html("Load");
+                },3000)
             }
         }
     })
@@ -379,6 +450,10 @@ function handleResetTable(){
             });
         }else if(type === 'chkAmazonReviews'){
             chrome.storage.local.set({amazonReviews: []}, function(){
+                $("#tableBody > tr").remove()
+            });
+        }else if(type === 'chkEditDetailPage'){
+            chrome.storage.local.set({detailPageResults: []}, function(){
                 $("#tableBody > tr").remove()
             });
         }
@@ -444,6 +519,19 @@ function loadTable(type, rows){
                 "</tr>"
             );
         }
+    }else if(type === 'chkEditDetailPage'){
+        for (let index = 0; index < rows.length; index++) {
+            const row = JSON.parse(rows[index]);
+            $("#tableBody").append(
+                "<tr>" +
+                    "<td>" + row.asin + "</td>" +
+                    "<td>" + row.sku + "</td>" +
+                    "<td>" + row.quantity + "</td>" +
+                    "<td>" + row.ht + "</td>" +
+                    "<td>" + row.shipmentTemplate + "</td>" +
+                "</tr>"
+            );
+        }
     }
     $('#totalResult').html(`(${rows.length} Rows)`)
 }
@@ -488,6 +576,19 @@ function copyResults(){
                 for(let x in data){
                     let e = JSON.parse(data[x]);
                     mergeData = mergeData + `${e.asin}\t${e.brand}\t${e.title}\t${e.starRating}\t${e.fiveStarRating}\t${e.customerRating}\t${e.reviews.split("|")[0]}\t${e.reviews.split("|")[1]}\t${e.reviews.split("|")[2]}\t${e.reviews.split("|")[3]}\t${e.reviews.split("|")[4]}\t${e.reviews.split("|")[5]}\t${e.reviews.split("|")[6]}\t${e.reviews.split("|")[7]}\t${e.reviews.split("|")[8]}\t${e.reviews.split("|")[9]}\n`;
+                }
+                copyToClipboard(mergeData)
+            });
+        }else if(type === 'chkEditDetailPage'){
+            chrome.storage.local.get('detailPageResults', function(result){
+                let data = [].concat(...result.detailPageResults.map(e => e));
+                let mergeData = '';
+                let header = 'ASIN\tSKU\tQTY\tHT\tShippingTemplate\n'; 
+                mergeData = mergeData + header;
+    
+                for(let x in data){
+                    let e = JSON.parse(data[x]);
+                    mergeData = mergeData + `${e.asin}\t${e.sku}\t${e.quantity}\t${e.ht}\t${e.shipmentTemplate}\t\n`;
                 }
                 copyToClipboard(mergeData)
             });
