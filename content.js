@@ -217,7 +217,7 @@ $(window).keydown(function(e) {
 			document.querySelector('#olpProductImage > a').click();
 		}else if(e.ctrlKey && e.keyCode == 39){ // ctrl key + enter
 			let asin = window.location.href.substring(window.location.href.indexOf('/B0')+1, window.location.href.indexOf('/B0')+11);
-			window.location.href = 'https://www.amazon.com/dp/offer-listing/' + asin;
+			window.location.href = 'https://www.amazon.com/gp/offer-listing/' + asin;
 		}
 	}
 });
