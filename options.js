@@ -1,34 +1,34 @@
-$(function(){
+$(function () {
 
-    chrome.storage.local.get(['amazonResults','addProductResults', 'optionConfig', 'closeTabs', 'amazonReviews', 'detailPageResults'], function(result){
-        if(result.detailPageResults === undefined){
+    chrome.storage.local.get(['amazonResults', 'addProductResults', 'optionConfig', 'closeTabs', 'amazonReviews', 'detailPageResults'], function (result) {
+        if (result.detailPageResults === undefined) {
             chrome.storage.local.set({ detailPageResults: [] })
         }
-        
-        if(result.amazonResults === undefined){
+
+        if (result.amazonResults === undefined) {
             chrome.storage.local.set({ amazonResults: [] })
         }
 
-        if(result.addProductResults === undefined){
+        if (result.addProductResults === undefined) {
             chrome.storage.local.set({ addProductResults: [] })
         }
 
-        if(result.amazonReviews === undefined){
+        if (result.amazonReviews === undefined) {
             chrome.storage.local.set({ amazonReviews: [] })
         }
 
-        if(result.closeTabs === undefined){
+        if (result.closeTabs === undefined) {
             chrome.storage.local.set({ closeTabs: 'enabled' })
             $("input#chkCloseTabs").prop("checked", true);
-        }else{
+        } else {
             result.closeTabs === 'enabled' ? $("input#chkCloseTabs").prop("checked", true) : $("input#chkCloseTabs").prop("checked", false);
         }
 
-        if(result.optionConfig === undefined){
-            chrome.storage.local.set({ optionConfig: { type: 'chkAmazon', closeTabs: 'enabled' } }, function(){
+        if (result.optionConfig === undefined) {
+            chrome.storage.local.set({ optionConfig: { type: 'chkAmazon', closeTabs: 'enabled' } }, function () {
                 $("input[name=radioType][value='chkAmazon']").prop("checked", true);
             })
-        }else{
+        } else {
             $(`input[name=radioType][value='${result.optionConfig.type}']`).prop("checked", true);
             change_type()
         }
@@ -47,59 +47,59 @@ $(function(){
     handleRefreshTable();
     handleResetTable();
     copyResults();
-    
+
     handleOptionModal();
     handleExportTable();
 
-    chrome.storage.onChanged.addListener(function(changes, namespace) {
+    chrome.storage.onChanged.addListener(function (changes, namespace) {
         for (var key in changes) {
             var storageChange = changes[key];
             console.log('Storage key "%s" in namespace "%s" changed. ' +
-                      'Old value was "%s", new value is "%s".',
-                      key,
-                      namespace,
-                      storageChange.oldValue,
-                      storageChange.newValue);
+                'Old value was "%s", new value is "%s".',
+                key,
+                namespace,
+                storageChange.oldValue,
+                storageChange.newValue);
 
             handleChangeResults();
         }
     });
 });
 
-function handleExportTable(){
-    $("#exportTableToExcel").click(function(){
+function handleExportTable() {
+    $("#exportTableToExcel").click(function () {
         $("#resultTable").table2excel({
-            name:"Sheet1",
-            filename:`ExportTable-${Date.now()}`,
-            fileext:".xls"
+            name: "Sheet1",
+            filename: `ExportTable-${Date.now()}`,
+            fileext: ".xls"
         });
     })
 }
-function handleChangeResults(){
+function handleChangeResults() {
     let radioTypeValue = $("input[name='radioType']:checked").val();
-    if(radioTypeValue === 'chkAmazon'){
-        chrome.storage.local.get(['amazonResults'], function(result){
+    if (radioTypeValue === 'chkAmazon') {
+        chrome.storage.local.get(['amazonResults'], function (result) {
             let data = [].concat(...result.amazonResults.map(e => e))
             console.log(data);
             loadTable(radioTypeValue, data)
         })
         $('#categoryLimit').text(`Amazon Page Limit: 100`);
-    }else if(radioTypeValue === 'chkAddProduct'){
-        chrome.storage.local.get(['addProductResults'], function(result){
+    } else if (radioTypeValue === 'chkAddProduct') {
+        chrome.storage.local.get(['addProductResults'], function (result) {
             let data = [].concat(...result.addProductResults.map(e => e))
             console.log(data);
             loadTable(radioTypeValue, data)
         })
         $('#categoryLimit').text(`Add Product Page Limit: 50`);
-    }else if(radioTypeValue === 'chkAmazonReviews'){
-        chrome.storage.local.get(['amazonReviews'], function(result){
+    } else if (radioTypeValue === 'chkAmazonReviews') {
+        chrome.storage.local.get(['amazonReviews'], function (result) {
             let data = [].concat(...result.amazonReviews.map(e => e))
             console.log(data);
             loadTable(radioTypeValue, data)
         })
         $('#categoryLimit').text(`Amazon Review Page Limit: 100`);
-    }else if(radioTypeValue === 'chkEditDetailPage'){
-        chrome.storage.local.get(['detailPageResults'], function(result){
+    } else if (radioTypeValue === 'chkEditDetailPage') {
+        chrome.storage.local.get(['detailPageResults'], function (result) {
             let data = [].concat(...result.detailPageResults.map(e => e))
             console.log(data);
             loadTable(radioTypeValue, data)
@@ -108,13 +108,13 @@ function handleChangeResults(){
     }
 }
 
-function handleChangeType(){
+function handleChangeType() {
     //update table header
-    $('input:radio[name="radioType"]').change(function(){
+    $('input:radio[name="radioType"]').change(function () {
         change_type();
-    }); 
+    });
 }
-function change_type(){
+function change_type() {
     let type = $("input[name='radioType']:checked").val();
     $("#tableHeader").empty();
     if (type === 'chkAmazon') {
@@ -127,13 +127,13 @@ function change_type(){
             <th>Description</th>
             <th>Bullets</th>`
         );
-        chrome.storage.local.get(['amazonResults'], function(result){
+        chrome.storage.local.get(['amazonResults'], function (result) {
             let data = [].concat(...result.amazonResults.map(e => e))
             console.log(data);
             loadTable(type, data)
         })
-        chrome.storage.local.set({ optionConfig: { type: 'chkAmazon'} })
-    }else if (type === 'chkAddProduct') {
+        chrome.storage.local.set({ optionConfig: { type: 'chkAmazon' } })
+    } else if (type === 'chkAddProduct') {
         $("#tableHeader").append(`
             <th>Search ID</th>
             <th>ASIN</th>
@@ -145,13 +145,13 @@ function change_type(){
             <th>Status</th>`
         );
 
-        chrome.storage.local.get(['addProductResults'], function(result){
+        chrome.storage.local.get(['addProductResults'], function (result) {
             let data = [].concat(...result.addProductResults.map(e => e))
             console.log(data);
             loadTable(type, data)
         })
-        chrome.storage.local.set({ optionConfig: { type: 'chkAddProduct'} })
-    }else if (type === 'chkAmazonReviews') {
+        chrome.storage.local.set({ optionConfig: { type: 'chkAddProduct' } })
+    } else if (type === 'chkAmazonReviews') {
         $("#tableHeader").append(`
             <th>ASIN</th>
             <th>Brand</th>
@@ -171,13 +171,13 @@ function change_type(){
             <th>Review 10</th>`
         );
 
-        chrome.storage.local.get(['amazonReviews'], function(result){
+        chrome.storage.local.get(['amazonReviews'], function (result) {
             let data = [].concat(...result.amazonReviews.map(e => e))
             console.log(data);
             loadTable(type, data)
         })
-        chrome.storage.local.set({ optionConfig: { type: 'chkAmazonReviews'} })
-    }else if (type === 'chkEditDetailPage') {
+        chrome.storage.local.set({ optionConfig: { type: 'chkAmazonReviews' } })
+    } else if (type === 'chkEditDetailPage') {
         $("#tableHeader").append(`
             <th>ASIN</th>
             <th>SKU</th>
@@ -186,57 +186,57 @@ function change_type(){
             <th>Shipping Template</th>`
         );
 
-        chrome.storage.local.get(['detailPageResults'], function(result){
+        chrome.storage.local.get(['detailPageResults'], function (result) {
             let data = [].concat(...result.detailPageResults.map(e => e))
             console.log(data);
             loadTable(type, data)
         })
-        chrome.storage.local.set({ optionConfig: { type: 'chkEditDetailPage'} })
+        chrome.storage.local.set({ optionConfig: { type: 'chkEditDetailPage' } })
     }
 }
 
-function handleChangeProductIDList(){
-    $('#asinList').keyup(function(){
+function handleChangeProductIDList() {
+    $('#asinList').keyup(function () {
         let asins = $('#asinList').val().split('\n');
         let filteredASINs = asins.filter(asin => asin !== "");
         $('#asinInput').text(filteredASINs.length);
 
         let type = $("input[name='radioType']:checked").val();
-        if(type === 'chkAmazon' && filteredASINs.length > 100){
-            showNotification('Warning!', `You've exceed ${filteredASINs.length-100} for limit number of Amazon Detail Page.\nExceed Product IDs will not be opened.`)
-        }else if(type === 'chkAddProduct' || type === 'chkAmazonReviews' && filteredASINs.length > 50){
-            showNotification('Warning!', `You've exceed ${filteredASINs.length-50} for limit number of Add Product Page.\nExceed Product IDs will not be opened.`)
-        }else if(type === 'chkEditDetailPage' && filteredASINs.length > 100){
-            showNotification('Warning!', `You've exceed ${filteredASINs.length-100} for limit number of Add Product Page.\nExceed Product IDs will not be opened.`)
+        if (type === 'chkAmazon' && filteredASINs.length > 100) {
+            showNotification('Warning!', `You've exceed ${filteredASINs.length - 100} for limit number of Amazon Detail Page.\nExceed Product IDs will not be opened.`)
+        } else if (type === 'chkAddProduct' || type === 'chkAmazonReviews' && filteredASINs.length > 50) {
+            showNotification('Warning!', `You've exceed ${filteredASINs.length - 50} for limit number of Add Product Page.\nExceed Product IDs will not be opened.`)
+        } else if (type === 'chkEditDetailPage' && filteredASINs.length > 100) {
+            showNotification('Warning!', `You've exceed ${filteredASINs.length - 100} for limit number of Add Product Page.\nExceed Product IDs will not be opened.`)
         }
     })
 }
 
-function handleClearProductIDList(){
-    $('#btnClearASINList').click(function(){
+function handleClearProductIDList() {
+    $('#btnClearASINList').click(function () {
         $('#asinList').val('');
         $('#asinInput').text(0)
     })
 }
 
-function handleOpenProductIDList(){
-    $('#btnOpenASINList').click(function(){
+function handleOpenProductIDList() {
+    $('#btnOpenASINList').click(function () {
         let radioTypeValue = $("input[name='radioType']:checked").val();
         let limit = radioTypeValue === 'chkAmazon' || 'chkEditDetailPage' ? 100 : 50;
         let asins = $('#asinList').val().split('\n');
         let filteredASINs = asins.filter(asin => asin !== "");
         let maxASIN = filteredASINs.length > limit ? limit : filteredASINs.length;
 
-        for(let x=0; x<maxASIN; x++){
+        for (let x = 0; x < maxASIN; x++) {
             let asin = filteredASINs[x];
-            if(radioTypeValue === 'chkAmazon'){
-                chrome.tabs.create({url: `https://www.amazon.com/dp/${asin}?ref=myi_title_dp&th=1&psc=1`, active: false })
-            }else if(radioTypeValue === 'chkAddProduct'){
-                chrome.tabs.create({url: `https://sellercentral.amazon.com/product-search?q=${asin}&ref_=xx_prodsrch_cont_prodsrch&`, active: false })
-            }else if(radioTypeValue === 'chkAmazonReviews'){
-                chrome.tabs.create({url: `https://www.amazon.com/product-reviews/${asin}/ref=acr_dpx_hist_5?ie=UTF8&filterByStar=five_star&reviewerType=all_reviews#reviews-filter-bar`, active: false })
-            }else if(radioTypeValue === 'chkEditDetailPage'){
-                chrome.tabs.create({url: `https://sellercentral.amazon.com/abis/listing/edit?asin=${asin.split(',')[0]}&sku=${asin.split(',')[1]}&productType=&marketplaceID=ATVPDKIKX0DER&bannerType=NOBANNER&metadataVersion=&extraParam=edit&fwdRestrictedListing=restricted_edit_listing&fwdPTDNotLaunched=tile.restricted_ptd_notlaunched_listing#offer`, active: false })
+            if (radioTypeValue === 'chkAmazon') {
+                chrome.tabs.create({ url: `https://www.amazon.com/dp/${asin}?ref=myi_title_dp&th=1&psc=1`, active: false })
+            } else if (radioTypeValue === 'chkAddProduct') {
+                chrome.tabs.create({ url: `https://sellercentral.amazon.com/product-search?q=${asin}&ref_=xx_prodsrch_cont_prodsrch&`, active: false })
+            } else if (radioTypeValue === 'chkAmazonReviews') {
+                chrome.tabs.create({ url: `https://www.amazon.com/product-reviews/${asin}/ref=acr_dpx_hist_5?ie=UTF8&filterByStar=five_star&reviewerType=all_reviews#reviews-filter-bar`, active: false })
+            } else if (radioTypeValue === 'chkEditDetailPage') {
+                chrome.tabs.create({ url: `https://sellercentral.amazon.com/abis/listing/edit?asin=${asin.split(',')[0]}&sku=${asin.split(',')[1]}&productType=&marketplaceID=ATVPDKIKX0DER&bannerType=NOBANNER&metadataVersion=&extraParam=edit&fwdRestrictedListing=restricted_edit_listing&fwdPTDNotLaunched=tile.restricted_ptd_notlaunched_listing#offer`, active: false })
             }
         }
         $('#asinList').val('');
@@ -244,41 +244,41 @@ function handleOpenProductIDList(){
     })
 }
 
-function handleCloseTabs(){
-    $('#btnCloseTabs').click(function(){
+function handleCloseTabs() {
+    $('#btnCloseTabs').click(function () {
         closeTabs()
     })
 }
 
-function closeTabs(){
-    chrome.tabs.query({currentWindow: true}, callback);
-    function callback(tabs){
+function closeTabs() {
+    chrome.tabs.query({ currentWindow: true }, callback);
+    function callback(tabs) {
         let type = $("input[name='radioType']:checked").val();
-        if(type === 'chkAmazon'){
-            for(let x in tabs){
+        if (type === 'chkAmazon') {
+            for (let x in tabs) {
                 let tab = tabs[x];
-                if(tab.url.indexOf('www.amazon.com') > -1){
+                if (tab.url.indexOf('www.amazon.com') > -1) {
                     chrome.tabs.remove(tab.id);
                 }
             }
-        }else if(type === 'chkAddProduct'){
-            for(let x in tabs){
+        } else if (type === 'chkAddProduct') {
+            for (let x in tabs) {
                 let tab = tabs[x];
-                if(tab.url.indexOf('sellercentral.amazon.com/product') > -1){
+                if (tab.url.indexOf('sellercentral.amazon.com/product') > -1) {
                     chrome.tabs.remove(tab.id);
                 }
             }
-        }else if(type === 'chkAmazonReviews'){
-            for(let x in tabs){
+        } else if (type === 'chkAmazonReviews') {
+            for (let x in tabs) {
                 let tab = tabs[x];
-                if(tab.url.indexOf('www.amazon.com/product-reviews') > -1){
+                if (tab.url.indexOf('www.amazon.com/product-reviews') > -1) {
                     chrome.tabs.remove(tab.id);
                 }
             }
-        }else if(type === 'chkEditDetailPage'){
-            for(let x in tabs){
+        } else if (type === 'chkEditDetailPage') {
+            for (let x in tabs) {
                 let tab = tabs[x];
-                if(tab.url.indexOf('sellercentral.amazon.com/abis/listing/edit') > -1){
+                if (tab.url.indexOf('sellercentral.amazon.com/abis/listing/edit') > -1) {
                     chrome.tabs.remove(tab.id);
                 }
             }
@@ -286,174 +286,174 @@ function closeTabs(){
     }
 }
 
-function handleRefreshTable(){
-    $('#btnLoadTable').click(function(){
+function handleRefreshTable() {
+    $('#btnLoadTable').click(function () {
         $("#btnLoadTable").attr("disabled", true);
         $("#btnLoadTable").html("Loading...");
 
-        chrome.tabs.query({currentWindow: true}, callback);
-        function callback(tabs){
+        chrome.tabs.query({ currentWindow: true }, callback);
+        function callback(tabs) {
             let type = $("input[name='radioType']:checked").val();
-            if(type === 'chkAmazon'){
+            if (type === 'chkAmazon') {
                 let currentData = [];
                 let updatedData = [];
                 let closeTab;
-                chrome.storage.local.get(['amazonResults','closeTabs'], function(result){
+                chrome.storage.local.get(['amazonResults', 'closeTabs'], function (result) {
                     currentData = result.amazonResults;
                     closeTab = result.closeTabs
                 });
 
-                for(let x in tabs){
+                for (let x in tabs) {
                     let tab = tabs[x];
-                    
+
                     let status = tab.status;
                     let url = tab.url.indexOf('dp/B0')
-                    if(status === 'complete' && url > -1){
-                        chrome.tabs.sendMessage(tab.id, { greeting: "hello" }, function(response) {
+                    if (status === 'complete' && url > -1) {
+                        chrome.tabs.sendMessage(tab.id, { greeting: "hello" }, function (response) {
                             let newData = response.farewell;
                             updatedData.push(newData);
                         });
                     }
                 }
-                setTimeout(function(){
+                setTimeout(function () {
                     currentData.push(updatedData);
                     chrome.storage.local.set({ amazonResults: currentData });
 
                     //REMOVE TAB AFTER LOADED TO TABLE
-                    if(closeTab === 'enabled'){
+                    if (closeTab === 'enabled') {
                         closeTabs()
                     }
 
                     $("#btnLoadTable").attr("disabled", false);
                     $("#btnLoadTable").html("Load");
-                },3000)
+                }, 3000)
 
-            }else if(type === 'chkAddProduct'){
+            } else if (type === 'chkAddProduct') {
                 let currentData = [];
                 let updatedData = [];
                 let closeTab;
-                chrome.storage.local.get(['addProductResults','closeTabs'], function(result){
+                chrome.storage.local.get(['addProductResults', 'closeTabs'], function (result) {
                     currentData = result.addProductResults;
                     closeTab = result.closeTabs
                 });
 
-                for(let x in tabs){
+                for (let x in tabs) {
                     let tab = tabs[x];
-                    
+
                     let status = tab.status;
                     let url = tab.url.indexOf('search?q=')
-                    if(status === 'complete' && url > -1){
-                        chrome.tabs.sendMessage(tab.id, { greeting: "addProduct" }, function(response) {
+                    if (status === 'complete' && url > -1) {
+                        chrome.tabs.sendMessage(tab.id, { greeting: "addProduct" }, function (response) {
                             let newData = response.farewell;
-                            for(let y in newData){
+                            for (let y in newData) {
                                 updatedData.push(newData[y])
                             }
-                        }); 
+                        });
                     }
                 }
-                setTimeout(function(){
+                setTimeout(function () {
                     currentData.push(updatedData);
                     chrome.storage.local.set({ addProductResults: currentData });
 
                     //REMOVE TAB AFTER LOADED TO TABLE
-                    if(closeTab === 'enabled'){
+                    if (closeTab === 'enabled') {
                         closeTabs()
                     }
 
                     $("#btnLoadTable").attr("disabled", false);
                     $("#btnLoadTable").html("Load");
-                },3000)
-            }else if(type === 'chkAmazonReviews'){
+                }, 3000)
+            } else if (type === 'chkAmazonReviews') {
                 let currentData = [];
                 let updatedData = [];
                 let closeTab;
-                chrome.storage.local.get(['amazonReviews','closeTabs'], function(result){
+                chrome.storage.local.get(['amazonReviews', 'closeTabs'], function (result) {
                     currentData = result.amazonReviews;
                     closeTab = result.closeTabs
                 });
 
-                for(let x in tabs){
+                for (let x in tabs) {
                     let tab = tabs[x];
-                    
+
                     let status = tab.status;
                     let url = tab.url.indexOf('www.amazon.com/product-reviews')
-                    if(status === 'complete' && url > -1){
-                        chrome.tabs.sendMessage(tab.id, { greeting: "amzReviews" }, function(response) {
+                    if (status === 'complete' && url > -1) {
+                        chrome.tabs.sendMessage(tab.id, { greeting: "amzReviews" }, function (response) {
                             console.log(response)
                             let newData = response.farewell;
                             updatedData.push(newData);
                         });
                     }
                 }
-                setTimeout(function(){
+                setTimeout(function () {
                     currentData.push(updatedData);
                     chrome.storage.local.set({ amazonReviews: currentData });
 
                     //REMOVE TAB AFTER LOADED TO TABLE
-                    if(closeTab === 'enabled'){
+                    if (closeTab === 'enabled') {
                         closeTabs()
                     }
 
                     $("#btnLoadTable").attr("disabled", false);
                     $("#btnLoadTable").html("Load");
-                },3000)
-            }else if(type === 'chkEditDetailPage'){
+                }, 3000)
+            } else if (type === 'chkEditDetailPage') {
                 let currentData = [];
                 let updatedData = [];
                 let closeTab;
-                chrome.storage.local.get(['detailPageResults','closeTabs'], function(result){
+                chrome.storage.local.get(['detailPageResults', 'closeTabs'], function (result) {
                     currentData = result.detailPageResults;
                     closeTab = result.closeTabs
                 });
 
-                for(let x in tabs){
+                for (let x in tabs) {
                     let tab = tabs[x];
-                    
+
                     let status = tab.status;
                     let url = tab.url.indexOf('sellercentral.amazon.com/abis/listing/edit')
-                    if(status === 'complete' && url > -1){
-                        chrome.tabs.sendMessage(tab.id, { greeting: "detailPage" }, function(response) {
+                    if (status === 'complete' && url > -1) {
+                        chrome.tabs.sendMessage(tab.id, { greeting: "detailPage" }, function (response) {
                             console.log(response)
                             let newData = response.farewell;
                             updatedData.push(newData);
                         });
                     }
                 }
-                setTimeout(function(){
+                setTimeout(function () {
                     currentData.push(updatedData);
                     chrome.storage.local.set({ detailPageResults: currentData });
 
                     //REMOVE TAB AFTER LOADED TO TABLE
-                    if(closeTab === 'enabled'){
+                    if (closeTab === 'enabled') {
                         closeTabs()
                     }
 
                     $("#btnLoadTable").attr("disabled", false);
                     $("#btnLoadTable").html("Load");
-                },3000)
+                }, 3000)
             }
         }
     })
 }
 
 //CLEAR TABLE
-function handleResetTable(){
-    $('#btnResetTable').click(function(){
+function handleResetTable() {
+    $('#btnResetTable').click(function () {
         let type = $("input[name='radioType']:checked").val();
-        if(type === 'chkAmazon'){
-            chrome.storage.local.set({amazonResults: []}, function(){
+        if (type === 'chkAmazon') {
+            chrome.storage.local.set({ amazonResults: [] }, function () {
                 $("#tableBody > tr").remove()
             });
-        }else if(type === 'chkAddProduct'){
-            chrome.storage.local.set({addProductResults: []}, function(){
+        } else if (type === 'chkAddProduct') {
+            chrome.storage.local.set({ addProductResults: [] }, function () {
                 $("#tableBody > tr").remove()
             });
-        }else if(type === 'chkAmazonReviews'){
-            chrome.storage.local.set({amazonReviews: []}, function(){
+        } else if (type === 'chkAmazonReviews') {
+            chrome.storage.local.set({ amazonReviews: [] }, function () {
                 $("#tableBody > tr").remove()
             });
-        }else if(type === 'chkEditDetailPage'){
-            chrome.storage.local.set({detailPageResults: []}, function(){
+        } else if (type === 'chkEditDetailPage') {
+            chrome.storage.local.set({ detailPageResults: [] }, function () {
                 $("#tableBody > tr").remove()
             });
         }
@@ -462,9 +462,9 @@ function handleResetTable(){
 
 
 //LOAD TABLE
-function loadTable(type, rows){
+function loadTable(type, rows) {
     $("#tableBody").empty();
-    if(type === 'chkAmazon'){
+    if (type === 'chkAmazon') {
         for (let index = 0; index < rows.length; index++) {
             const row = JSON.parse(rows[index]);
             $("#tableBody").append(
@@ -479,56 +479,56 @@ function loadTable(type, rows){
                 "</tr>"
             );
         }
-    }else if(type === 'chkAddProduct'){
+    } else if (type === 'chkAddProduct') {
         for (let index = 0; index < rows.length; index++) {
             const row = JSON.parse(rows[index]);
             $("#tableBody").append(
                 "<tr>" +
-                    "<td>" + row.productId + "</td>" +
-                    "<td>" + row.asin + "</td>" +
-                    "<td>" + row.title + "</td>" +
-                    "<td>" + row.UPC + "</td>" +
-                    "<td>" + row.EAN + "</td>" +
-                    "<td>" + row.salesRank + "</td>" +
-                    "<td>" + row.offers + "</td>" +
-                    "<td>" + row.status + "</td>" +
+                "<td>" + row.productId + "</td>" +
+                "<td>" + row.asin + "</td>" +
+                "<td>" + row.title + "</td>" +
+                "<td>" + row.UPC + "</td>" +
+                "<td>" + row.EAN + "</td>" +
+                "<td>" + row.salesRank + "</td>" +
+                "<td>" + row.offers + "</td>" +
+                "<td>" + row.status + "</td>" +
                 "</tr>"
             );
         }
-    }else if(type === 'chkAmazonReviews'){
+    } else if (type === 'chkAmazonReviews') {
         for (let index = 0; index < rows.length; index++) {
             const row = JSON.parse(rows[index]);
             $("#tableBody").append(
                 "<tr>" +
-                    "<td>" + row.asin + "</td>" +
-                    "<td>" + row.brand + "</td>" +
-                    "<td>" + row.title + "</td>" +
-                    "<td>" + row.starRating + "</td>" +
-                    "<td>" + row.fiveStarRating + "</td>" +
-                    "<td>" + row.customerRating + "</td>" +
-                    "<td>" + row.reviews.split("|")[0] + "</td>" +
-                    "<td>" + row.reviews.split("|")[1] + "</td>" +
-                    "<td>" + row.reviews.split("|")[2] + "</td>" +
-                    "<td>" + row.reviews.split("|")[3] + "</td>" +
-                    "<td>" + row.reviews.split("|")[4] + "</td>" +
-                    "<td>" + row.reviews.split("|")[5] + "</td>" +
-                    "<td>" + row.reviews.split("|")[6] + "</td>" +
-                    "<td>" + row.reviews.split("|")[7] + "</td>" +
-                    "<td>" + row.reviews.split("|")[8] + "</td>" +
-                    "<td>" + row.reviews.split("|")[9] + "</td>" +
+                "<td>" + row.asin + "</td>" +
+                "<td>" + row.brand + "</td>" +
+                "<td>" + row.title + "</td>" +
+                "<td>" + row.starRating + "</td>" +
+                "<td>" + row.fiveStarRating + "</td>" +
+                "<td>" + row.customerRating + "</td>" +
+                "<td>" + row.reviews.split("|")[0] + "</td>" +
+                "<td>" + row.reviews.split("|")[1] + "</td>" +
+                "<td>" + row.reviews.split("|")[2] + "</td>" +
+                "<td>" + row.reviews.split("|")[3] + "</td>" +
+                "<td>" + row.reviews.split("|")[4] + "</td>" +
+                "<td>" + row.reviews.split("|")[5] + "</td>" +
+                "<td>" + row.reviews.split("|")[6] + "</td>" +
+                "<td>" + row.reviews.split("|")[7] + "</td>" +
+                "<td>" + row.reviews.split("|")[8] + "</td>" +
+                "<td>" + row.reviews.split("|")[9] + "</td>" +
                 "</tr>"
             );
         }
-    }else if(type === 'chkEditDetailPage'){
+    } else if (type === 'chkEditDetailPage') {
         for (let index = 0; index < rows.length; index++) {
             const row = JSON.parse(rows[index]);
             $("#tableBody").append(
                 "<tr>" +
-                    "<td>" + row.asin + "</td>" +
-                    "<td>" + row.sku + "</td>" +
-                    "<td>" + row.quantity + "</td>" +
-                    "<td>" + row.ht + "</td>" +
-                    "<td>" + row.shipmentTemplate + "</td>" +
+                "<td>" + row.asin + "</td>" +
+                "<td>" + row.sku + "</td>" +
+                "<td>" + row.quantity + "</td>" +
+                "<td>" + row.ht + "</td>" +
+                "<td>" + row.shipmentTemplate + "</td>" +
                 "</tr>"
             );
         }
@@ -537,56 +537,56 @@ function loadTable(type, rows){
 }
 
 //COPY RESULTS TO CLIPBOARD
-function copyResults(){
-    $('#btnCopyTable').click(function(){
+function copyResults() {
+    $('#btnCopyTable').click(function () {
         let type = $("input[name='radioType']:checked").val();
-        if(type === 'chkAmazon'){
-            chrome.storage.local.get('amazonResults', function(result){
+        if (type === 'chkAmazon') {
+            chrome.storage.local.get('amazonResults', function (result) {
                 let data = [].concat(...result.amazonResults.map(e => e));
                 let mergeData = '';
-                let header = 'ASIN\tBrand\tTitle\tImage\tCategory\tDescription\tBullets\n'; 
+                let header = 'ASIN\tBrand\tTitle\tImage\tCategory\tDescription\tBullets\n';
                 mergeData = mergeData + header;
-    
-                for(let x in data){
+
+                for (let x in data) {
                     let e = JSON.parse(data[x]);
                     mergeData = mergeData + `${e.asin}\t${e.brand}\t${e.childTitle}\t${e.mainImage}\t${e.category}\t${e.description}\t${e.bullets}\n`
                 }
                 copyToClipboard(mergeData)
             });
-        }else if(type === 'chkAddProduct'){
-            chrome.storage.local.get('addProductResults', function(result){
+        } else if (type === 'chkAddProduct') {
+            chrome.storage.local.get('addProductResults', function (result) {
                 let data = [].concat(...result.addProductResults.map(e => e));
                 let mergeData = '';
-                let header = 'SearchID\tASIN\tTitle\tUPC\tEAN\tSales Rank\tOffer\tStatus\n'; 
+                let header = 'SearchID\tASIN\tTitle\tUPC\tEAN\tSales Rank\tOffer\tStatus\n';
                 mergeData = mergeData + header;
-    
-                for(let x in data){
+
+                for (let x in data) {
                     let e = JSON.parse(data[x]);
                     mergeData = mergeData + `'${e.productId}\t${e.asin}\t${e.title}\t'${e.UPC}\t'${e.EAN}\t${e.salesRank}\t${e.offers}\t${e.status}\n`;
                 }
                 copyToClipboard(mergeData)
             });
-        }else if(type === 'chkAmazonReviews'){
-            chrome.storage.local.get('amazonReviews', function(result){
+        } else if (type === 'chkAmazonReviews') {
+            chrome.storage.local.get('amazonReviews', function (result) {
                 let data = [].concat(...result.amazonReviews.map(e => e));
                 let mergeData = '';
-                let header = 'ASIN\tBrand\tTitle\tStar Rating\t5 Star Percent\tCustomer Rating\tReview1\tReview2\tReview3\tReview4\tReview5\tReview6\tReview7\tReview8\tReview9\tReview10\n'; 
+                let header = 'ASIN\tBrand\tTitle\tStar Rating\t5 Star Percent\tCustomer Rating\tReview1\tReview2\tReview3\tReview4\tReview5\tReview6\tReview7\tReview8\tReview9\tReview10\n';
                 mergeData = mergeData + header;
-    
-                for(let x in data){
+
+                for (let x in data) {
                     let e = JSON.parse(data[x]);
                     mergeData = mergeData + `${e.asin}\t${e.brand}\t${e.title}\t${e.starRating}\t${e.fiveStarRating}\t${e.customerRating}\t${e.reviews.split("|")[0]}\t${e.reviews.split("|")[1]}\t${e.reviews.split("|")[2]}\t${e.reviews.split("|")[3]}\t${e.reviews.split("|")[4]}\t${e.reviews.split("|")[5]}\t${e.reviews.split("|")[6]}\t${e.reviews.split("|")[7]}\t${e.reviews.split("|")[8]}\t${e.reviews.split("|")[9]}\n`;
                 }
                 copyToClipboard(mergeData)
             });
-        }else if(type === 'chkEditDetailPage'){
-            chrome.storage.local.get('detailPageResults', function(result){
+        } else if (type === 'chkEditDetailPage') {
+            chrome.storage.local.get('detailPageResults', function (result) {
                 let data = [].concat(...result.detailPageResults.map(e => e));
                 let mergeData = '';
-                let header = 'ASIN\tSKU\tQTY\tHT\tShippingTemplate\n'; 
+                let header = 'ASIN\tSKU\tQTY\tHT\tShippingTemplate\n';
                 mergeData = mergeData + header;
-    
-                for(let x in data){
+
+                for (let x in data) {
                     let e = JSON.parse(data[x]);
                     mergeData = mergeData + `${e.asin}\t${e.sku}\t${e.quantity}\t${e.ht}\t${e.shipmentTemplate}\t\n`;
                 }
@@ -597,64 +597,64 @@ function copyResults(){
     })
 }
 
-function copyToClipboard(text){
-	const els = document.createElement('textarea');
-	els.value = text;
-	document.body.appendChild(els);
-	els.select();
-	document.execCommand('copy');
-	document.body.removeChild(els)
+function copyToClipboard(text) {
+    const els = document.createElement('textarea');
+    els.value = text;
+    document.body.appendChild(els);
+    els.select();
+    document.execCommand('copy');
+    document.body.removeChild(els)
 }
 
-function handleSearchTable(){
-    $('#search').keyup(function(){
+function handleSearchTable() {
+    $('#search').keyup(function () {
         search_table($(this).val());
     })
 
-    function search_table(value){
-        $('#tableBody tr').each(function(){
+    function search_table(value) {
+        $('#tableBody tr').each(function () {
             let found = false;
-            $(this).each(function(){
-                if($(this).text().toLowerCase().indexOf(value.toLowerCase()) >= 0){
+            $(this).each(function () {
+                if ($(this).text().toLowerCase().indexOf(value.toLowerCase()) >= 0) {
                     found = true
                 }
             })
 
-            if(found){
+            if (found) {
                 $(this).show();
-            }else{
+            } else {
                 $(this).hide();
             }
         })
     }
 }
 
-function showNotification(title, message){
-	let opt = {
-		type: "basic",
-		title: title,
-		message: message,
-		iconUrl: "images/icon128.png"
-	};
-	chrome.runtime.sendMessage({type: "shownotification", opt: opt});
+function showNotification(title, message) {
+    let opt = {
+        type: "basic",
+        title: title,
+        message: message,
+        iconUrl: "images/icon128.png"
+    };
+    chrome.runtime.sendMessage({ type: "shownotification", opt: opt });
 };
 
-function handleOptionModal(){
-    $('#btnOption').click(function(){
-        document.getElementById('optionModal').style.display='block'
+function handleOptionModal() {
+    $('#btnOption').click(function () {
+        document.getElementById('optionModal').style.display = 'block'
     })
 
-    $('#btnCloseOption').click(function(){
-        document.getElementById('optionModal').style.display='none'
+    $('#btnCloseOption').click(function () {
+        document.getElementById('optionModal').style.display = 'none'
     })
 
-    $('input:checkbox').change(function(){
+    $('input:checkbox').change(function () {
 
-        chrome.storage.local.get('closeTabs', function(result){
+        chrome.storage.local.get('closeTabs', function (result) {
             let res = result.closeTabs;
-            if(res === 'enabled'){
+            if (res === 'enabled') {
                 chrome.storage.local.set({ closeTabs: 'disabled' })
-            }else{
+            } else {
                 chrome.storage.local.set({ closeTabs: 'enabled' })
             }
         })
