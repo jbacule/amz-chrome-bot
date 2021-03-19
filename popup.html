@@ -13,7 +13,7 @@
 
 <body>
     <div class="w3-bar w3-card-2">
-        <div class="w3-sidebar w3-bar-block w3-dark-grey" style="width:150px; height:330px;">
+        <div class="w3-sidebar w3-bar-block w3-dark-grey" style="width:180px; height:330px;">
             <div class="w3-bar-item w3-border-bottom">
                 <img src="images/icon32.png"><span><strong> MENU</strong></span>
             </div>
@@ -23,16 +23,16 @@
             <button class="w3-bar-item w3-button tablink" id="btnUploadFeed">Upload Feed</button>
             <button class="w3-bar-item w3-button tablink" id="btnAmazonPage">Amazon Page</button>
             <button class="w3-bar-item w3-button tablink" id="btnOtherTools">Other Tools</button>
-            <button class="w3-bar-item w3-button tablink" id="btnBrandPage">Brand Page</button>
+            <button class="w3-bar-item w3-button tablink" id="btnBrandPage">Competitive Pricing Alerts</button>
             <button class="w3-bar-item w3-button tablink" id="btnHelp">Help</button>
         </div>
         
-        <div style="margin-left:150px; height:330px;" class="content-panel">
+        <div style="margin-left:180px; height:330px;" class="content-panel">
             <div id="BrandPage" class="w3-container panel" style="display:none">
-                <div class="w3-center w3-teal mb-2">Brand Page</div>
-                <label class="w3-small">Open Brand Page API:</label>
+                <div class="w3-center w3-teal mb-2">Competitive Pricing Alerts</div>
+                <label class="w3-small">Open Brand Health Page:</label>
                 
-                <a style="text-decoration: none;" href="https://sellercentral.amazon.com/brandcentral/api/v2/listings?filter=UNCOMPETITIVE_PAGE_VIEWS&isHighImpactFilter=true&pageId=0&pageSize=250&sortByType=UNCOMPETITIVE_PAGE_VIEWS_BY_ASIN&isAscending=false" target="_blank">
+                <a style="text-decoration: none;" href="https://sellercentral.amazon.com/brands/health?filterHighImpact=true&filterIssues=true&ref=brnd_dsh_nav_health&extract_data=true" target="_blank">
                     <button class="w3-btn w3-block w3-teal mt-2" id="btnOpenBrandPageApi">Open Page</button>
                 </a>
                 
@@ -40,27 +40,6 @@
 
                 <hr>
                 <button class="w3-btn w3-block w3-teal mt-2" id="btnExtractBrandPage">Extract Data</button>
-
-                <table id="brandPageTable" style="visibility: hidden;">
-                    <thead>
-                        <tr class="w3-teal" id="tableHeader">
-                            <th>ASIN</th>
-                            <th>URL</th>
-                            <th>Brandname</th>
-                            <th>SKU</th>
-                            <th>Title</th>
-                            <th>Category</th>
-                            <th>IsPrime</th>
-                            <th>Conversion Percentage</th>
-                            <th>IsHighImpact</th>
-                            <th>Page Views</th>
-                            <th>Uncompetitive Page Views</th>
-                            <th>Price</th>
-                            <th>Competitive Price</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
             </div>
 
             <div id="ManageInv" class="w3-container panel" style="display:none">

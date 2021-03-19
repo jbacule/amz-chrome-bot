@@ -69,7 +69,7 @@ function panelController() {
             $("#btnExtractAmazon").attr("disabled", true);
         }
 
-        if (tabData.url.indexOf("sellercentral.amazon.com/brandcentral/api/v2/") >= 0) {
+        if (tabData.url.indexOf("sellercentral.amazon.com/brands/health") >= 0) {
             $("#btnExtractBrandPage").attr("disabled", false);
             $("#btnOpenBrandPageApi").attr("disabled", true);
             $('#btnRefreshBrandPageApi').show();
@@ -186,43 +186,13 @@ function manageButtons() {
         $("#btnExtractBrandPage").attr("disabled", true);
         $("#btnExtractBrandPage").html("Extracting...");
 
-        let dataSource = []
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             chrome.tabs.sendMessage(tabs[0].id, { greeting: "brandPage" }, function (response) {
                 console.log(response)
-                dataSource = response.farewell;
             });
         });
 
-        setTimeout(function () {
-
-            for (let x in dataSource) {
-                let row = dataSource[x]
-                $("#tableBody").append(
-                    "<tr>" +
-                    "<td>" + row.asin + "</td>" +
-                    "<td>" + `https://amazon.com/dp/${row.asin}` + "</td>" +
-                    "<td>" + row.brandName + "</td>" +
-                    "<td>" + row.sku + "</td>" +
-                    "<td>" + row.title + "</td>" +
-                    "<td>" + row.category + "</td>" +
-                    "<td>" + row.isPrime + "</td>" +
-                    "<td>" + row.conversionPercentage + "</td>" +
-                    "<td>" + row.isHighImpact + "</td>" +
-                    "<td>" + row.pageViews + "</td>" +
-                    "<td>" + row.uncompetitivePageViews + "</td>" +
-                    "<td>" + row.lowestLiveOfferPrice + "</td>" +
-                    "<td>" + row.liveTargetPrice + "</td>" +
-                    "</tr>"
-                );
-            }
-
-            $("#brandPageTable").table2excel({
-                name: "Sheet1",
-                filename: `ExportTable-${Date.now()}`,
-                fileext: ".xls"
-            });
-
+        setTimeout(() => {
             $("#btnExtractBrandPage").attr("disabled", false);
             $("#btnExtractBrandPage").html("Extract Data");
         }, 3000);

@@ -1,17 +1,22 @@
 {
   "name": "AMZ Chrome Bot",
-  "version": "2.0.9",
+  "version": "2.1.0",
   "author": "shujo",
   "description": "A simple chrome extension that will navigate, search & get data from Seller Central and Amazon website in every page loaded",
   "permissions": [
     "notifications",
+    "downloads",
     "tabs",
     "storage",
     "activeTab",
     "https://*/*"
   ],
   "background": {
-    "scripts": ["js/jquery.js", "background.js"],
+    "scripts": [
+      "js/xlsx.full.min.js",
+      "js/jquery.js",
+      "background.js"
+    ],
     "persistent": false
   },
   "content_scripts": [
@@ -21,7 +26,14 @@
         "https://sellercentral.amazon.com/*",
         "https://www.amazon.com/*"
       ],
-      "js": ["js/jquery.js", "js/myscript.js", "js/velcroDetector.js","js/noImgDetector.js","js/addProductExtractor.js", "content.js"]
+      "js": [
+        "js/jquery.js", 
+        "js/myscript.js", 
+        "js/velcroDetector.js",
+        "js/noImgDetector.js",
+        "js/addProductExtractor.js", 
+        "js/xlsx.full.min.js", 
+        "content.js"]
     }
   ],
   "browser_action": {

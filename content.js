@@ -1,3 +1,85 @@
+function getQueryStringValue(key) {
+	return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+}
+
+function addExtractDataButton() {
+	if (document.URL.includes('sellercentral.amazon.com/brands/health')) {
+		document.querySelector('div.brand-health-page > div:nth-child(1) > div')
+			.insertAdjacentHTML('beforeend', `<button class="css-12kyhw9" style="margin-left:10px; background-color: #168EA1; color: #fff;" id="extract-data">Extract Data</button>`)
+	}
+}
+
+function createXLSX(header, rows, sheetname, filename) {
+	let wb = XLSX.utils.book_new()
+	let ws = XLSX.utils.json_to_sheet(rows, { header });
+	XLSX.utils.book_append_sheet(wb, ws, sheetname);
+	XLSX.writeFile(wb, filename);
+}
+
+async function extractDataHandler() {
+	let listings = await fetch("https://sellercentral.amazon.com/brandcentral/api/v2/listings?filter=UNCOMPETITIVE_PAGE_VIEWS&isHighImpactFilter=true&pageId=0&pageSize=250&sortByType=UNCOMPETITIVE_PAGE_VIEWS_BY_ASIN&isAscending=false")
+		.then(res => res.json())
+
+	let items = listings.allListingData;
+	let results = [];
+	for (let x in items) {
+		let item = items[x]
+
+		if (item.liveTargetPrice && item.lowestLiveOfferPrice) {
+			let asin = item.asin;
+			let title = item.title;
+			let category = item.category;
+			let brandName = item.brandName;
+			let conversionPercentage = item.conversion ? item.conversion.percentage : null
+			let isHighImpact = item.isHighImpact;
+			let pageViews = item.pageViews.total;
+			let uncompetitivePageViews = item.hasUncompetitivePageViews ? item.uncompetitivePageViews : null;
+			let liveTargetPrice = item.liveTargetPrice ? item.liveTargetPrice.boxPrice : null;
+			let lowestLiveOfferPrice = item.lowestLiveOfferPrice ? item.lowestLiveOfferPrice.boxPrice : null;
+
+			let skus = item.skus.map(e => {
+				return { sku: e.sku, isPrime: e.isPrime }
+			})
+
+			for (let y in skus) {
+				results.push({
+					asin,
+					url: `https://amazon.com/dp/${asin}`,
+					brandName,
+					sku: skus[y].sku,
+					title,
+					category,
+					isPrime: skus[y].isPrime,
+					conversionPercentage,
+					isHighImpact,
+					pageViews,
+					uncompetitivePageViews,
+					price: lowestLiveOfferPrice,
+					competitivePrice: liveTargetPrice
+				})
+			}
+		}
+	}
+	const header = ["asin", "url", "brandName", "sku", "title", "category", "isPrime", "conversionPercentage", "isHighImpact", "pageViews", "uncompetitivePageViews", "price", "competitivePrice"];
+	await createXLSX(header, results, "CompetitivePricingAlerts Result", `Competitive_Pricing_Alerts-${Date.now()}.xlsx`);
+}
+
+setTimeout(() => {
+	//add extract data button after the site was loaded
+	addExtractDataButton();
+
+	//execute when extract_data button is clicked
+	$('#extract-data').click(async function () {
+		extractDataHandler();
+	})
+
+	//if extract_data query is true in url
+	if (getQueryStringValue('extract_data') === 'true') {
+		extractDataHandler();
+	}
+}, 2000)
+
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	console.log(sender.tab);
 	//console.log(sender.tab + "from a content script:" + sender.tab.url + "from the extension");
@@ -160,51 +242,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	}
 
 	if (request.greeting == 'brandPage') {
-		let body = document.querySelector('body').innerText;
-		let listings = JSON.parse(body);
-
-		let items = listings.allListingData;
-		let results = [];
-		for (let x in items) {
-			let item = items[x]
-
-			if (item.liveTargetPrice && item.lowestLiveOfferPrice) {
-				let asin = item.asin;
-				let title = item.title;
-				let category = item.category;
-				let brandName = item.brandName;
-				let conversionPercentage = item.conversion ? item.conversion.percentage : null
-				let isHighImpact = item.isHighImpact;
-				let pageViews = item.pageViews.total;
-				let uncompetitivePageViews = item.hasUncompetitivePageViews ? item.uncompetitivePageViews : null;
-				let liveTargetPrice = item.liveTargetPrice ? item.liveTargetPrice.boxPrice : null;
-				let lowestLiveOfferPrice = item.lowestLiveOfferPrice ? item.lowestLiveOfferPrice.boxPrice : null;
-
-				let skus = item.skus.map(e => {
-					return { sku: e.sku, isPrime: e.isPrime }
-				})
-
-				for (let y in skus) {
-					results.push({
-						asin,
-						sku: skus[y].sku,
-						isPrime: skus[y].isPrime,
-						isInStock: skus[y].isInStock,
-						title,
-						category,
-						brandName,
-						conversionPercentage,
-						isHighImpact,
-						pageViews,
-						uncompetitivePageViews,
-						liveTargetPrice,
-						lowestLiveOfferPrice
-					})
-				}
-			}
-		}
-
-		sendResponse({ farewell: results });
+		extractDataHandler();
+		sendResponse({ farewell: { status: "success", message: "Extracted!" } });
 	}
 });
 
