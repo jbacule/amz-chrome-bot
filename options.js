@@ -586,7 +586,7 @@ function copyResults() {
             chrome.storage.local.get('addProductResults', function (result) {
                 let data = [].concat(...result.addProductResults.map(e => e));
                 let mergeData = '';
-                let header = 'SearchID\tASIN\tTitle\tUPC\tEAN\tSales Rank\tOffer\tStatus\n';
+                let header = 'SearchID\tASIN\tTitle\tUPC\tEAN\tSales Rank\tOffer\tStatus\tIs Available\n';
                 mergeData = mergeData + header;
 
                 for (let x in data) {
