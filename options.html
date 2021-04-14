@@ -10,6 +10,7 @@
     <script src="js/jquery.js"></script>
     <script src="options.js"></script>
     <script src="js/jquery.table2excel.min.js"></script>
+    <script src="js/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="w3-container">
@@ -18,13 +19,13 @@
         <hr>
         <div style="display: inline;">
             <div class="mb-2">Select Type:</div>
-            <input class="w3-check" type="radio" name="radioType" value="chkAmazon">
+            <input class="w3-check" type="radio" name="radioType" value="chkAmazon" data-value="Amazon Page">
             <label>Amazon Detail Page</label><br>
-            <input class="w3-check" type="radio" name="radioType" value="chkAddProduct">
+            <input class="w3-check" type="radio" name="radioType" value="chkAddProduct" data-value="Add Product">
             <label>Add Product Page</label><br>
-            <input class="w3-check" type="radio" name="radioType" value="chkAmazonReviews">
+            <input class="w3-check" type="radio" name="radioType" value="chkAmazonReviews" data-value="Amazon Reviews">
             <label>Amazon Reviews Page</label><br>
-            <input class="w3-check" type="radio" name="radioType" value="chkEditDetailPage">
+            <input class="w3-check" type="radio" name="radioType" value="chkEditDetailPage" data-value="Edit Detail Page">
             <label>Amazon Edit Detail Page</label>
         </div><br><br>
 

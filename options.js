@@ -66,13 +66,40 @@ $(function () {
     });
 });
 
+function createXLSX(header, rows, sheetname, filename) {
+    let wb = XLSX.utils.book_new()
+    let ws = XLSX.utils.json_to_sheet(rows, { header });
+    XLSX.utils.book_append_sheet(wb, ws, sheetname);
+    XLSX.writeFile(wb, filename);
+}
+
 function handleExportTable() {
-    $("#exportTableToExcel").click(function () {
-        $("#resultTable").table2excel({
-            name: "Sheet1",
-            filename: `ExportTable-${Date.now()}`,
-            fileext: ".xls"
+    $("#exportTableToExcel").click(async function () {
+        // $("#resultTable").table2excel({
+        //     name: "Sheet1",
+        //     filename: `ExportTable-${Date.now()}`,
+        //     fileext: ".xls"
+        // });
+
+        let headers = []
+        document.querySelectorAll('thead > tr#tableHeader > th').forEach(item => {
+            headers.push(item.textContent)
         });
+        let rows = []
+        document.querySelectorAll('tbody#tableBody > tr').forEach(item => {
+            let columnValues = []
+            item.querySelectorAll('td').forEach(cols => {
+                columnValues.push(cols.textContent)
+            })
+
+            let obj = {}
+            for (let x in headers) {
+                obj[headers[x]] = columnValues[x]
+            }
+            rows.push(obj)
+        })
+        let sheetName = $("input[name='radioType']:checked").attr('data-value')
+        await createXLSX(headers, rows, sheetName, `${sheetName}-${Date.now()}.xlsx`);
     })
 }
 function handleChangeResults() {
@@ -142,7 +169,8 @@ function change_type() {
             <th>EAN</th>
             <th>Sales Rank</th>
             <th>Offers</th>
-            <th>Status</th>`
+            <th>Status</th>
+            <th>Is Available</th>`
         );
 
         chrome.storage.local.get(['addProductResults'], function (result) {
@@ -492,6 +520,7 @@ function loadTable(type, rows) {
                 "<td>" + row.salesRank + "</td>" +
                 "<td>" + row.offers + "</td>" +
                 "<td>" + row.status + "</td>" +
+                "<td>" + row.isAvailable + "</td>" +
                 "</tr>"
             );
         }
@@ -562,7 +591,7 @@ function copyResults() {
 
                 for (let x in data) {
                     let e = JSON.parse(data[x]);
-                    mergeData = mergeData + `'${e.productId}\t${e.asin}\t${e.title}\t'${e.UPC}\t'${e.EAN}\t${e.salesRank}\t${e.offers}\t${e.status}\n`;
+                    mergeData = mergeData + `'${e.productId}\t${e.asin}\t${e.title}\t'${e.UPC}\t'${e.EAN}\t${e.salesRank}\t${e.offers}\t${e.status}\t${e.isAvailable}\n`;
                 }
                 copyToClipboard(mergeData)
             });

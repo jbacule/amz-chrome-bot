@@ -146,6 +146,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			jQuery.each($('div.content.kat-row.row-container'), (index, item) => {
 				let title = $(item).find('section.kat-col-xs-4.search-row-title > kat-link').attr('label');
 				let link = $(item).find('section.kat-col-xs-4.search-row-title > kat-link').attr('href');
+				let isAvailable = $(item).find('kat-button[label="Not available"]').length === 1 ? 'No' : 'Yes'
+				console.log($(item).find('kat-button[label="Not available"]'))
 				let asin = link.substring(link.length - 10, link.length);
 				let UPC = 'n/a';
 				let EAN = 'n/a';
@@ -171,8 +173,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 						offers = res.substring(8, res.length)
 					}
 				})
-				let status = count > 1 ? 'Duplicate' : 'Non-Duplicate';
-				let objData = { productId, asin, title, UPC, EAN, salesRank, offers, status };
+				let status = count > 1 ? 'With Duplicate' : 'No Duplicate';
+				let objData = { productId, asin, title, UPC, EAN, salesRank, offers, status, isAvailable };
 
 				results.push(JSON.stringify(objData))
 			})
@@ -185,7 +187,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 				EAN: 'n/a',
 				salesRank: 'n/a',
 				offers: 'n/a',
-				status: 'Not Found'
+				status: 'Not Found',
+				isAvailable: 'No'
 			}))
 		}
 		sendResponse({ farewell: results });
