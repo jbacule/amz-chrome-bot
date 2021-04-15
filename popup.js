@@ -46,10 +46,7 @@ function panelController() {
 
     function callback(tabs) {
         let tabData = tabs[0];
-        if (tabData.title === "Manage Inventory - Price Alerts") {
-            modifyPanel('btnPriceAlert', 'PriceAlert');
-            manageExtractButtons(2);
-        } else if (tabData.title === "Manage Inventory") {
+        if (tabData.title === "Manage Inventory") {
             modifyPanel('btnManageInv', 'ManageInv');
             manageExtractButtons(1);
         } else if (tabData.url.indexOf('sellercentral.amazon.com/listing/upload') >= 0) {
@@ -69,6 +66,17 @@ function panelController() {
             $("#btnExtractAmazon").attr("disabled", true);
         }
 
+        //new Price Alert Page
+        if (tabData.url.indexOf("sellercentral.amazon.com/pricing/health") >= 0) {
+            $("#btnExtractPriceAlertPage").attr("disabled", false);
+            $("#btnOpenPriceAlertPage").attr("disabled", true);
+            $('#btnRefreshPriceAlertPage').show();
+        } else {
+            $("#btnExtractPriceAlertPage").attr("disabled", true);
+            $("#btnOpenPriceAlertPage").attr("disabled", false);
+            $('#btnRefreshPriceAlertPage').hide();
+        }
+        //Brand Health Page
         if (tabData.url.indexOf("sellercentral.amazon.com/brands/health") >= 0) {
             $("#btnExtractBrandPage").attr("disabled", false);
             $("#btnOpenBrandPageApi").attr("disabled", true);
@@ -182,6 +190,30 @@ function manageButtons() {
         }, 2000);
     });
 
+    //Price Alert Page
+    $('#btnExtractPriceAlertPage').click(function () {
+        $("#btnExtractPriceAlertPage").attr("disabled", true);
+        $("#btnExtractPriceAlertPage").html("Extracting...");
+
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, { greeting: "priceAlertPage" }, function (response) {
+                console.log(response)
+            });
+        });
+
+        setTimeout(() => {
+            $("#btnExtractPriceAlertPage").attr("disabled", false);
+            $("#btnExtractPriceAlertPage").html("Extract Data");
+        }, 3000);
+    });
+
+    $('#btnRefreshPriceAlertPage').click(function () {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.reload(tabs[0].id, function () { })
+        });
+    })
+
+    //Brand Health Page
     $('#btnExtractBrandPage').click(function () {
         $("#btnExtractBrandPage").attr("disabled", true);
         $("#btnExtractBrandPage").html("Extracting...");
@@ -197,7 +229,6 @@ function manageButtons() {
             $("#btnExtractBrandPage").html("Extract Data");
         }, 3000);
     });
-
     $('#btnRefreshBrandPageApi').click(function () {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             chrome.tabs.reload(tabs[0].id, function () { })
