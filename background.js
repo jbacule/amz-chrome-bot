@@ -9,7 +9,17 @@ chrome.runtime.onInstalled.addListener(function() {
       "purgeReplaceStatus": "disabled",
       "manageNewTab": "enabled",
       "priceNewTab": "enabled",
-      "amazonNewTab": "enabled"
+      "amazonNewTab": "enabled",
+
+      "amazonResults": [],
+      "addProductResults": [],
+      "detailPageResults": [],
+      "amazonReviews": [],
+      "competitorData": [],
+      
+      "closeTabs": 'enabled',
+      "optionConfig": { "type": 'chkAmazon', "closeTabs": 'enabled' },
+      "formVisibility":"block"
     });
 });
 

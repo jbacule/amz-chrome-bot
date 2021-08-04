@@ -10,3 +10,12 @@
 .mt-5{
     margin-top: 20px;
 }
+
+div.result-container{
+    margin-bottom: 20px;
+}
+
+div.table-container {
+    width: 100%;
+    overflow-x: auto;
+}

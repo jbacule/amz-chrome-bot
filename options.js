@@ -1,39 +1,17 @@
 $(function () {
-
-    chrome.storage.local.get(['amazonResults', 'addProductResults', 'optionConfig', 'closeTabs', 'amazonReviews', 'detailPageResults'], function (result) {
-        if (result.detailPageResults === undefined) {
-            chrome.storage.local.set({ detailPageResults: [] })
-        }
-
-        if (result.amazonResults === undefined) {
-            chrome.storage.local.set({ amazonResults: [] })
-        }
-
-        if (result.addProductResults === undefined) {
-            chrome.storage.local.set({ addProductResults: [] })
-        }
-
-        if (result.amazonReviews === undefined) {
-            chrome.storage.local.set({ amazonReviews: [] })
-        }
-
-        if (result.closeTabs === undefined) {
-            chrome.storage.local.set({ closeTabs: 'enabled' })
-            $("input#chkCloseTabs").prop("checked", true);
-        } else {
-            result.closeTabs === 'enabled' ? $("input#chkCloseTabs").prop("checked", true) : $("input#chkCloseTabs").prop("checked", false);
-        }
-
-        if (result.optionConfig === undefined) {
-            chrome.storage.local.set({ optionConfig: { type: 'chkAmazon', closeTabs: 'enabled' } }, function () {
-                $("input[name=radioType][value='chkAmazon']").prop("checked", true);
-            })
-        } else {
-            $(`input[name=radioType][value='${result.optionConfig.type}']`).prop("checked", true);
-            change_type()
-        }
+    chrome.storage.local.get(['optionConfig', 'closeTabs', "formVisibility"], function (result) {
+        result.closeTabs === 'enabled' ? $("input#chkCloseTabs").prop("checked", true) : $("input#chkCloseTabs").prop("checked", false);
+        $(`input[name=radioType][value='${result.optionConfig.type}']`).prop("checked", true);
+        change_type();
 
         handleChangeResults();
+        if(result.formVisibility === 'block'){
+            $('#form-container').css('display', 'block');
+            $('#btnShowResultOnly').html('Hide Form');
+        }else{
+            $('#form-container').css('display', 'none');
+            $('#btnShowResultOnly').html('Show Form');
+        }
     })
 
     handleSearchTable();
@@ -52,19 +30,37 @@ $(function () {
     handleExportTable();
 
     chrome.storage.onChanged.addListener(function (changes, namespace) {
-        for (var key in changes) {
-            var storageChange = changes[key];
-            console.log('Storage key "%s" in namespace "%s" changed. ' +
-                'Old value was "%s", new value is "%s".',
-                key,
-                namespace,
-                storageChange.oldValue,
-                storageChange.newValue);
+        handleChangeResults();
+    });
 
-            handleChangeResults();
-        }
+    $('#btnShowResultOnly').click(function () {
+        chrome.storage.local.get(["formVisibility"], function (result) {
+            if(result.formVisibility === 'block'){
+                $('#form-container').css('display', 'none');
+                $('#btnShowResultOnly').html('Show Form');
+                chrome.storage.local.set({ formVisibility: 'none' })
+            }else{
+                $('#form-container').css('display', 'block');
+                $('#btnShowResultOnly').html('Hide Form');
+                chrome.storage.local.set({ formVisibility: 'block' })
+            }
+        })
     });
 });
+
+function handleFormVisibility(status, btnClicked) {
+    if(status === 'block'){
+        $('#form-container').css('display', 'none');
+        if(btnClicked) {
+            chrome.storage.local.set({ formVisibility: 'none' })
+        }
+    }else{
+        $('#form-container').css('display', 'block');
+        if(btnClicked) {
+            chrome.storage.local.set({ formVisibility: 'block' })
+        }
+    }
+}
 
 function createXLSX(header, rows, sheetname, filename) {
     let wb = XLSX.utils.book_new()
@@ -75,11 +71,7 @@ function createXLSX(header, rows, sheetname, filename) {
 
 function handleExportTable() {
     $("#exportTableToExcel").click(async function () {
-        // $("#resultTable").table2excel({
-        //     name: "Sheet1",
-        //     filename: `ExportTable-${Date.now()}`,
-        //     fileext: ".xls"
-        // });
+        let sheetName = $("input[name='radioType']:checked").attr('data-value')
 
         let headers = []
         document.querySelectorAll('thead > tr#tableHeader > th').forEach(item => {
@@ -98,10 +90,11 @@ function handleExportTable() {
             }
             rows.push(obj)
         })
-        let sheetName = $("input[name='radioType']:checked").attr('data-value')
+        
         await createXLSX(headers, rows, sheetName, `${sheetName}-${Date.now()}.xlsx`);
     })
 }
+
 function handleChangeResults() {
     let radioTypeValue = $("input[name='radioType']:checked").val();
     if (radioTypeValue === 'chkAmazon') {
@@ -132,6 +125,13 @@ function handleChangeResults() {
             loadTable(radioTypeValue, data)
         })
         $('#categoryLimit').text(`Amazon Edit Detail Page Limit: 100`);
+    } else if (radioTypeValue === 'chkCompetitorData') {
+        chrome.storage.local.get(['competitorData'], function (result) {
+            let data = [].concat(...result.competitorData.map(e => e))
+            console.log(data);
+            loadTable(radioTypeValue, data)
+        })
+        $('#categoryLimit').text(`Amazon Detail Page Limit: 100`);
     }
 }
 
@@ -220,6 +220,27 @@ function change_type() {
             loadTable(type, data)
         })
         chrome.storage.local.set({ optionConfig: { type: 'chkEditDetailPage' } })
+    } else if (type === 'chkCompetitorData') {
+        $("#tableHeader").append(`
+            <th>Brand</th>
+            <th>Description</th>
+            <th>Listing</th>
+            <th>Material</th>
+            <th>Price</th>
+            <th>Rating</th>
+            <th>ASINs</th>
+            <th style="display:none;">1-Year, Unit Sales</th>
+            <th>Rank Categories & Ranks</th>
+            <th style="display:none;">Ranking Keywords</th>
+            <th style="display:none;">Notes</th>`
+        );
+
+        chrome.storage.local.get(['competitorData'], function (result) {
+            let data = [].concat(...result.competitorData.map(e => e))
+            console.log(data);
+            loadTable(type, data)
+        })
+        chrome.storage.local.set({ optionConfig: { type: 'chkCompetitorData' } })
     }
 }
 
@@ -230,7 +251,7 @@ function handleChangeProductIDList() {
         $('#asinInput').text(filteredASINs.length);
 
         let type = $("input[name='radioType']:checked").val();
-        if (type === 'chkAmazon' && filteredASINs.length > 100) {
+        if (type === 'chkAmazon' && filteredASINs.length > 100 || type === 'chkCompetitorData' && filteredASINs.length > 100) {
             showNotification('Warning!', `You've exceed ${filteredASINs.length - 100} for limit number of Amazon Detail Page.\nExceed Product IDs will not be opened.`)
         } else if (type === 'chkAddProduct' || type === 'chkAmazonReviews' && filteredASINs.length > 50) {
             showNotification('Warning!', `You've exceed ${filteredASINs.length - 50} for limit number of Add Product Page.\nExceed Product IDs will not be opened.`)
@@ -250,7 +271,7 @@ function handleClearProductIDList() {
 function handleOpenProductIDList() {
     $('#btnOpenASINList').click(function () {
         let radioTypeValue = $("input[name='radioType']:checked").val();
-        let limit = radioTypeValue === 'chkAmazon' || 'chkEditDetailPage' ? 100 : 50;
+        let limit = radioTypeValue === 'chkAmazon' || 'chkEditDetailPage' || 'chkCompetitorData' ? 100 : 50;
         let asins = $('#asinList').val().split('\n');
         let filteredASINs = asins.filter(asin => asin !== "");
         let maxASIN = filteredASINs.length > limit ? limit : filteredASINs.length;
@@ -265,6 +286,8 @@ function handleOpenProductIDList() {
                 chrome.tabs.create({ url: `https://www.amazon.com/product-reviews/${asin}/ref=acr_dpx_hist_5?ie=UTF8&filterByStar=five_star&reviewerType=all_reviews#reviews-filter-bar`, active: false })
             } else if (radioTypeValue === 'chkEditDetailPage') {
                 chrome.tabs.create({ url: `https://sellercentral.amazon.com/abis/listing/edit?asin=${asin.split(',')[0]}&sku=${asin.split(',')[1]}&productType=&marketplaceID=ATVPDKIKX0DER&bannerType=NOBANNER&metadataVersion=&extraParam=edit&fwdRestrictedListing=restricted_edit_listing&fwdPTDNotLaunched=tile.restricted_ptd_notlaunched_listing#offer`, active: false })
+            } else if (radioTypeValue === 'chkCompetitorData') {
+                chrome.tabs.create({ url: `https://www.amazon.com/dp/${asin}?ref=myi_title_dp&th=1&psc=1`, active: false })
             }
         }
         $('#asinList').val('');
@@ -307,6 +330,13 @@ function closeTabs() {
             for (let x in tabs) {
                 let tab = tabs[x];
                 if (tab.url.indexOf('sellercentral.amazon.com/abis/listing/edit') > -1) {
+                    chrome.tabs.remove(tab.id);
+                }
+            }
+        } else if (type === 'chkCompetitorData') {
+            for (let x in tabs) {
+                let tab = tabs[x];
+                if (tab.url.indexOf('www.amazon.com') > -1) {
                     chrome.tabs.remove(tab.id);
                 }
             }
@@ -459,6 +489,39 @@ function handleRefreshTable() {
                     $("#btnLoadTable").attr("disabled", false);
                     $("#btnLoadTable").html("Load");
                 }, 3000)
+            } else if (type === 'chkCompetitorData') {
+                let currentData = [];
+                let updatedData = [];
+                let closeTab;
+                chrome.storage.local.get(['competitorData', 'closeTabs'], function (result) {
+                    currentData = result.competitorData;
+                    closeTab = result.closeTabs
+                });
+
+                for (let x in tabs) {
+                    let tab = tabs[x];
+
+                    let status = tab.status;
+                    let url = tab.url.indexOf('dp/B0')
+                    if (status === 'complete' && url > -1) {
+                        chrome.tabs.sendMessage(tab.id, { greeting: "competitorData" }, function (response) {
+                            let newData = response.farewell;
+                            updatedData.push(newData);
+                        });
+                    }
+                }
+                setTimeout(function () {
+                    currentData.push(updatedData);
+                    chrome.storage.local.set({ competitorData: currentData });
+
+                    //REMOVE TAB AFTER LOADED TO TABLE
+                    if (closeTab === 'enabled') {
+                        closeTabs()
+                    }
+
+                    $("#btnLoadTable").attr("disabled", false);
+                    $("#btnLoadTable").html("Load");
+                }, 3000)
             }
         }
     })
@@ -482,6 +545,10 @@ function handleResetTable() {
             });
         } else if (type === 'chkEditDetailPage') {
             chrome.storage.local.set({ detailPageResults: [] }, function () {
+                $("#tableBody > tr").remove()
+            });
+        } else if (type === 'chkCompetitorData') {
+            chrome.storage.local.set({ competitorData: [] }, function () {
                 $("#tableBody > tr").remove()
             });
         }
@@ -561,6 +628,25 @@ function loadTable(type, rows) {
                 "</tr>"
             );
         }
+    } else if (type === 'chkCompetitorData') {
+        for (let index = 0; index < rows.length; index++) {
+            const row = JSON.parse(rows[index]);
+            $("#tableBody").append(
+                "<tr>" +
+                "<td>" + row.brand + "</td>" +
+                "<td>" + row.description + "</td>" +
+                "<td>" + row.listing + "</td>" +
+                "<td>" + row.material + "</td>" +
+                "<td>" + row.price + "</td>" +
+                "<td>" + row.ratings + "</td>" +
+                "<td>" + row.asin + "</td>" +
+                '<td style="display:none;"></td>' +
+                "<td>" + row.categories + "</td>" +
+                '<td style="display:none;"></td>' +
+                '<td style="display:none;"></td>' +
+                "</tr>"
+            );
+        }
     }
     $('#totalResult').html(`(${rows.length} Rows)`)
 }
@@ -618,6 +704,19 @@ function copyResults() {
                 for (let x in data) {
                     let e = JSON.parse(data[x]);
                     mergeData = mergeData + `${e.asin}\t${e.sku}\t${e.quantity}\t${e.ht}\t${e.shipmentTemplate}\t\n`;
+                }
+                copyToClipboard(mergeData)
+            });
+        } else if (type === 'chkCompetitorData') {
+            chrome.storage.local.get('competitorData', function (result) {
+                let data = [].concat(...result.competitorData.map(e => e));
+                let mergeData = '';
+                let header = 'Brand\tDescription\tListing\tMaterial\tPrice\tRatings\tASINs\t1-Year, Unit Sales\tRank Categories & Ranks\tRanking Keywords\tNotes\n';
+                mergeData = mergeData + header;
+
+                for (let x in data) {
+                    let e = JSON.parse(data[x]);
+                    mergeData = mergeData + `${e.brand}\t${e.description}\t${e.listing}\t${e.material}\t${e.price}\t${e.ratings}\t${e.asin}\t\t${e.categories}\t\t\n`
                 }
                 copyToClipboard(mergeData)
             });

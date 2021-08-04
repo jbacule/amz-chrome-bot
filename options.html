@@ -15,35 +15,51 @@
 <body>
     <div class="w3-container">
         <h1>Bulk Data Extractor</h1>
-        <p>This is an option page where you manipulate your product ids (UPC/ASIN) by opening it directly in chrome tabs and get the details then put it in the table.</p>
-        <hr>
-        <div style="display: inline;">
-            <div class="mb-2">Select Type:</div>
-            <input class="w3-check" type="radio" name="radioType" value="chkAmazon" data-value="Amazon Page">
-            <label>Amazon Detail Page</label><br>
-            <input class="w3-check" type="radio" name="radioType" value="chkAddProduct" data-value="Add Product">
-            <label>Add Product Page</label><br>
-            <input class="w3-check" type="radio" name="radioType" value="chkAmazonReviews" data-value="Amazon Reviews">
-            <label>Amazon Reviews Page</label><br>
-            <input class="w3-check" type="radio" name="radioType" value="chkEditDetailPage" data-value="Edit Detail Page">
-            <label>Amazon Edit Detail Page</label>
-        </div><br><br>
+        <button class="w3-btn w3-tiny w3-round w3-teal w3-display-topright w3-margin" id="btnShowResultOnly">Hide Form</button>
+        <p id="description">This is an option page where you manipulate your product ids (UPC/ASIN) by opening it directly in chrome tabs and get the details then put it in the table.</p>
+        
+        <div id="form-container">
+            <hr>
+            <div class="form-content">
+                <div class="mb-2">Select Type:</div>
+                <div class="w3-row-padding w3-border" style="padding-bottom: 10px; padding-top: 5px;">
+                    <div class="w3-col" style="width:20%">
+                        <input class="w3-check" type="radio" name="radioType" value="chkAmazon" data-value="Amazon Page">
+                        <label>Amazon Detail Page</label>
+                    </div>
+                    <div class="w3-col" style="width:20%">
+                        <input class="w3-check" type="radio" name="radioType" value="chkAddProduct" data-value="Add Product">
+                        <label>Add Product Page</label>
+                    </div>
+                    <div class="w3-col" style="width:20%">
+                        <input class="w3-check" type="radio" name="radioType" value="chkAmazonReviews" data-value="Amazon Reviews">
+                        <label>Amazon Reviews Page</label>
+                    </div>
+                    <div class="w3-col" style="width:20%">
+                        <input class="w3-check" type="radio" name="radioType" value="chkEditDetailPage" data-value="Edit Detail Page">
+                        <label>Amazon Edit Detail Page</label>
+                    </div>
+                    <div class="w3-col" style="width:20%">
+                        <input class="w3-check" type="radio" name="radioType" value="chkCompetitorData" data-value="Amazon Competitor Data">
+                        <label>Competitor Data</label>
+                    </div>
+                </div>
+            </div><br>
 
-        <label>Enter Product IDs Here:</label>
-        <textarea class="w3-input w3-border" id="asinList" style="resize:none; height: 120px; font-size: 15px;"></textarea>
-        <button class="w3-btn w3-round w3-teal w3-margin-top" id="btnOpenASINList">Open</button>
-        <button class="w3-btn w3-round w3-red w3-margin-top" id="btnClearASINList">Clear</button>
-        <button class="w3-btn w3-round w3-grey w3-text-white w3-margin-top" id="btnCloseTabs">Close All Opened Tabs</button>
-        <div style="display: inline;">
-            <div style=" float: right;">
-                <p><span id="categoryLimit"></span> | Entered: <span id="asinInput">0</span></p>
+            <label>Enter Product IDs Here:</label>
+            <textarea class="w3-input w3-border" id="asinList" style="resize:none; height: 120px; font-size: 15px;"></textarea>
+            <button class="w3-btn w3-round w3-teal w3-margin-top" id="btnOpenASINList">Open</button>
+            <button class="w3-btn w3-round w3-red w3-margin-top" id="btnClearASINList">Clear</button>
+            <button class="w3-btn w3-round w3-grey w3-text-white w3-margin-top" id="btnCloseTabs">Close All Opened Tabs</button>
+            <div style="display: inline;">
+                <div style=" float: right;">
+                    <p><span id="categoryLimit"></span> | Entered: <span id="asinInput">0</span></p>
+                </div>
             </div>
         </div>
 
-        <hr>
-
-        
-        <div class="">
+        <div class="result-container">
+            <hr>
             <div style="display: inline;">
                 <div style="float: left;">
                     <h3>Result <span id="totalResult"> (0 Rows)</span></h3>
@@ -56,20 +72,22 @@
                     <button class="mb-2 w3-btn w3-round w3-blue" id="btnOption">Option</button>
                 </div>
             </div>
-            <table id="resultTable" class="w3-table-all w3-hoverable w3-tiny">
-                <thead>
-                    <tr class="w3-teal" id="tableHeader">
-                        <th>ASIN</th>
-                        <th>Brand</th>
-                        <th>Title</th>
-                        <th>Image</th>
-                        <th>Category</th>
-                        <th>Description</th>
-                        <th>Bullets</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+            <div class="table-container">
+                <table id="resultTable" class="w3-table-all w3-hoverable w3-tiny">
+                    <thead>
+                        <tr class="w3-teal" id="tableHeader">
+                            <th>ASIN</th>
+                            <th>Brand</th>
+                            <th>Title</th>
+                            <th>Image</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Bullets</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="optionModal" class="w3-modal">

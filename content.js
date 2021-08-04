@@ -338,11 +338,75 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 		sendResponse({ farewell: JSON.stringify(body) });
 	}
 
+	if (request.greeting == "competitorData") {
+		if ($('a.a-expander-header.a-declarative.a-expander-extend-header').length) {
+			document.querySelector('a.a-expander-header.a-declarative.a-expander-extend-header').click();
+		}
+
+		let brand = $('#bylineInfo').text().replace(/Visit the | Store/g, '');
+		let url = $(location).attr('href');
+		let asin = url.substring(url.indexOf('dp/B0') + 3, url.indexOf('dp/B0') + 13);
+		if (brand.length) {
+			let title = verifyData($('h1#title span#productTitle').text());
+			let price = $('span#priceblock_ourprice').length > 0 ? verifyData($('span#priceblock_ourprice').text()) : "n/a";
+			let ratings = $('div#averageCustomerReviews_feature_div span#acrPopover span.a-icon-alt').length > 0 ? verifyData($('div#averageCustomerReviews_feature_div span#acrPopover span.a-icon-alt').text()) : "n/a";
+			let categories = getAmazonCategory()
+			let material = $('#dropdown_selected_material_type').length > 0 ? verifyData($('#dropdown_selected_material_type').text()) : "n/a";
+
+			let objectData = {
+				asin,
+				brand,
+				description: title,
+				listing: url,
+				material,
+				price,
+				ratings: ratings.replace(/ out of 5 stars/g,''),
+				categories,
+			}
+			sendResponse({ farewell: JSON.stringify(objectData) });
+		} else {
+			let objectData = {
+				asin,
+				brand: 'n/a',
+				description: 'n/a',
+				listing: 'n/a',
+				material: 'n/a',
+				price: 'n/a',
+				ratings: 'n/a',
+				category: 'n/a'
+			}
+			sendResponse({ farewell: JSON.stringify(objectData) });
+		}
+	}
+
 	if (request.greeting == 'brandPage') {
 		extractDataHandler();
 		sendResponse({ farewell: { status: "success", message: "Extracted!" } });
 	}
 });
+
+function getAmazonCategory(){
+	let categories = []
+	if($('#SalesRank').length > 0){
+		$('li.zg_hrsr_item').each(function(){
+			categories.push(verifyData($(this).text()))
+		})
+
+		let elems = ['b', 'a', 'style', 'ul']
+		elems.forEach(elem => $(`#SalesRank ${elem}`).remove())
+
+		categories.unshift(verifyData($('#SalesRank').text().replace("()", "")))
+	}else if($('#productDetails_detailBullets_sections1').length > 0){
+		document.querySelectorAll('#productDetails_detailBullets_sections1 tbody tr').forEach(elem => {
+			if(elem.querySelector('th').textContent.includes('Best Sellers Rank')) {
+					elem.querySelectorAll('td > span > span').forEach(e => {
+						categories.push(e.textContent)
+					})
+			}
+		})
+	}
+	return categories.join("|")
+}
 
 uploadFeed();
 

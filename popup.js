@@ -234,6 +234,10 @@ function manageButtons() {
             chrome.tabs.reload(tabs[0].id, function () { })
         });
     })
+
+    $('#btnBulkDataExtractor').click(function () {
+        window.open("./options.html",'_blank');
+    })
 }
 
 function manageUploadFeed() {
