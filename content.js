@@ -388,24 +388,42 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 function getAmazonCategory(){
 	let categories = []
 	if($('#SalesRank').length > 0){
-		$('li.zg_hrsr_item').each(function(){
-			categories.push(verifyData($(this).text()))
-		})
+		if($('li.zg_hrsr_item').length){
+			$('li.zg_hrsr_item').each(function(){
+				categories.push(verifyData($(this).text()))
+			})
+		}
 
+		let cloneElem = $(`#SalesRank`).clone();
 		let elems = ['b', 'a', 'style', 'ul']
-		elems.forEach(elem => $(`#SalesRank ${elem}`).remove())
+		elems.forEach(e => cloneElem.find(e).remove())
 
-		categories.unshift(verifyData($('#SalesRank').text().replace("()", "")))
+		categories.unshift(verifyData(cloneElem.text().replace("()", "")))
 	}else if($('#productDetails_detailBullets_sections1').length > 0){
-		document.querySelectorAll('#productDetails_detailBullets_sections1 tbody tr').forEach(elem => {
-			if(elem.querySelector('th').textContent.includes('Best Sellers Rank')) {
-					elem.querySelectorAll('td > span > span').forEach(e => {
-						categories.push(e.textContent)
+		$('#productDetails_detailBullets_sections1 tbody tr').each(function(index, elem){
+			if($(elem).find('th').text().includes('Sellers Rank')) {
+				$(elem).find('td > span > span').each(function(i,e){
+					categories.push($(e).text())
+				})
+			}
+		})
+	}else{
+		$('#detailBulletsWrapper_feature_div > ul > li > span').each(function(index, elem){
+			if($(elem).find('span').text().includes('Sellers Rank')){
+				if($(elem).find('ul').length){
+					$(elem).find('ul > li').each((index, nElem) => {
+						categories.push(verifyData($(nElem).text()))
 					})
+				}
+
+				let cloneElem = $(elem).clone();
+				let elems = ['span', 'a', 'style', 'ul']
+				elems.forEach(e => cloneElem.find(e).remove())
+				categories.unshift(verifyData(cloneElem.text().replace(/[(]|[)]/g, '').trim()))
 			}
 		})
 	}
-	return categories.join("|")
+	return categories.length > 0  ? categories.join("|") : "n/a"
 }
 
 uploadFeed();
