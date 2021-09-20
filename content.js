@@ -463,9 +463,10 @@ chrome.storage.local.get("pageEnabled", function (data) {
 	chrome.storage.local.set({ 'pageEnabled': 'done' })
 });
 
-$(window).keydown(function (e) {
-	if (e.ctrlKey && e.keyCode == 13) { //keyboard shortcut: ctrl key + enter
-		if (document.title === "Manage Inventory") {
+document.addEventListener("keydown", function(e) {
+	// console.log(e)
+	if (e.ctrlKey && e.keyCode === 13) { //keyboard shortcut: ctrl key + enter
+		if (document.URL.indexOf('sellercentral.amazon.com/inventory') >= 0) {
 			copyToClipboard(manageInventory());
 			showNotification("Hi!", "Manage Inventory Data Extracted!");
 		} else if (document.title === "Manage Inventory - Price Alerts") {
@@ -473,7 +474,6 @@ $(window).keydown(function (e) {
 			showNotification("Hi!", "Price Alert Data Extracted!");
 		} else if (window.location.href.indexOf('/dp/B0') > -1) {
 			copyToClipboard(amazonDetailPage());
-			console.log(amazonDetailPage());
 			showNotification("Wazzup!", "Amazon Product Details Extracted!");
 		}
 	}

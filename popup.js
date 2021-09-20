@@ -46,7 +46,7 @@ function panelController() {
 
     function callback(tabs) {
         let tabData = tabs[0];
-        if (tabData.title === "Manage Inventory") {
+        if (tabData.url.indexOf('sellercentral.amazon.com/inventory') >= 0) {
             modifyPanel('btnManageInv', 'ManageInv');
             manageExtractButtons(1);
         } else if (tabData.url.indexOf('sellercentral.amazon.com/listing/upload') >= 0) {
