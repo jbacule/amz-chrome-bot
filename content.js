@@ -8,8 +8,8 @@ function addExtractDataButton() {
 			.insertAdjacentHTML('beforeend', `<button class="css-12kyhw9" style="margin-left:10px; background-color: #168EA1; color: #fff;" id="extract-data">Extract Data</button>`)
 	}
 	if (document.URL.includes('sellercentral.amazon.com/pricing/health')) {
-		document.querySelector('div.table-heading-text')
-			.insertAdjacentHTML('beforeend', `<button style="border:0; height: 35px;cursor: pointer; margin-left:10px; background-color: #168EA1; color: #fff;" id="extract-data">Extract Data</button>`)
+		document.querySelector('div.pricing-health-header')
+			.insertAdjacentHTML('beforeend', `<button style="border:0; height:35px; cursor: pointer; padding:5px 15px; background-color: #168EA1; color: #fff; float:right;" id="extract-data">Extract Data</button>`)
 	}
 }
 
@@ -68,83 +68,19 @@ async function extractDataHandler() {
 	await createXLSX(header, results, "CompetitivePricingAlerts Result", `Competitive_Pricing_Alerts-${Date.now()}.xlsx`);
 }
 
-async function extractPriceAlertPage() {
-	let results = []
-	let counter = -1;
-	let worker = setInterval(() => {
-		window.scrollTo(0, document.body.scrollHeight);
-		document.querySelector("kat-button[label='Show more']").click();
-
-		setTimeout(async () => {
-			document.querySelectorAll('kat-table-body[role="rowgroup"] > kat-table-row[role="row"]:not(.pep-alert-row)').forEach((item, index) => {
-				if (counter < index && item.querySelectorAll('kat-table-cell').length > 0) {
-					let baseSelector = 'kat-table-cell.nudge-list-row-pep__col-one > div > div.product-details__description-container';
-
-					let title = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('label');
-					let url = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('href');
-					let asin = item.querySelector(`${baseSelector} > div > div:nth-child(1)`).textContent.replace(/\n|\r|\t|ASIN:/g, '').trim()
-					let sku = item.querySelector(`${baseSelector} > div > div:nth-child(2)`).textContent.replace(/\n|\r|\t|SKU:/g, '').trim()
-					let condition = item.querySelector(`${baseSelector} > div > div:nth-child(3)`).textContent.replace(/\n|\r|\t|Condition:/g, '').trim()
-
-					let price = item.querySelector('kat-table-cell.nudge-list-row-pep__col-three > div.product-offer-price').textContent.replace('--.--', '').trim()
-					let minPrice = item.querySelector('kat-table-cell.nudge-list-row-pep__col-seven > div.product-minimum-price > kat-label').getAttribute('text')
-					let maxPrice = item.querySelector('kat-table-cell.nudge-list-row-pep__col-eight > div.product-maximum-price > kat-label').getAttribute('text')
-
-					let referencePrices = []
-					let noReferencePriceElem = item.querySelectorAll('kat-table-cell.nudge-list-row-pep__col-six div.product-reference-price:nth-child(1) > kat-label[text="No applicable Reference price"]')
-					if (noReferencePriceElem.length === 0) {
-						item.querySelectorAll('kat-table-cell.nudge-list-row-pep__col-six div.product-reference-price').forEach(e => {
-							let value = e.querySelector('kat-label').getAttribute('text');
-							let text = e.querySelector('div.product-reference-price__source').textContent.replace(/\n|\r/g, '').trim();
-							referencePrices.push({ text, value })
-						})
-					}
-
-					let averageSellingPrice = referencePrices.length > 0 && referencePrices.some(e => e.text === 'Average Selling Price')
-						? referencePrices.find(e => e.text === 'Average Selling Price').value : '-';
-
-					let featuredOffer = referencePrices.length > 0 && referencePrices.some(e => e.text === 'Featured Offer')
-						? referencePrices.find(e => e.text === 'Featured Offer').value : '-';
-
-					let priceByAmazon = referencePrices.length > 0 && referencePrices.some(e => e.text === 'Price by Amazon')
-						? referencePrices.find(e => e.text === 'Price by Amazon').value : '-';
-
-					let listPrice = referencePrices.length > 0 && referencePrices.some(e => e.text === 'List Price')
-						? referencePrices.find(e => e.text === 'List Price').value : '-';
-
-
-					results.push({
-						"SKU": sku,
-						"ASIN": asin,
-						"Title": title,
-						"URL": url,
-						"Condition": condition,
-						"Price": price,
-						"Min Price": minPrice,
-						"Max Price": maxPrice,
-						"ReferencePrice: Average Selling Price": averageSellingPrice,
-						"ReferencePrice: Featured Offer": featuredOffer,
-						"ReferencePrice: Prize by Amazon": priceByAmazon,
-						"ReferencePrice: List Price": listPrice
-					})
-					counter = index;
-				}
-			})
-
-
-			let showMoreButtonStatus = document.querySelector("kat-button[label='Show more']");
-			if (showMoreButtonStatus.getAttribute('disabled') && showMoreButtonStatus.getAttribute('disabled') === 'true') {
-				clearInterval(worker)
-				const header = ["SKU", "ASIN", "Title", "URL", "Condition", "Price", "Min Price", "Max Price",
-					"ReferencePrice: Average Selling Price",
-					"ReferencePrice: Featured Offer",
-					"ReferencePrice: Prize by Amazon",
-					"ReferencePrice: List Price"
-				];
-				await createXLSX(header, results, "Price Alerts Result", `Price_Alerts-${Date.now()}.xlsx`);
-			}
-		}, 1500)
-	}, 3000)
+function extractPriceAlertPage() {
+	if(document.querySelector('kat-tab-header[tab-id="PricingErrorStats"]').getAttribute('class')){
+		console.log('Extracting Price Error...')
+		extractPriceError();
+	}
+	if(document.querySelector('kat-tab-header[tab-id="FeaturedOfferWinRate"]').getAttribute('class')){
+		console.log('Extracting Featured Offer...')
+		extractFeaturedOffers();
+	}
+	if(document.querySelector('kat-tab-header[tab-id="SaleConversionRate"]').getAttribute('class')){
+		console.log('Extracting Sales Conversion...')
+		extractSalesConversion();
+	}
 }
 
 setTimeout(() => {
@@ -167,9 +103,9 @@ setTimeout(() => {
 		})
 
 		//if extract_data query is true in url
-		if (getQueryStringValue('extract_data') === 'true') {
-			extractPriceAlertPage();
-		}
+		// if (getQueryStringValue('extract_data') === 'true') {
+		// 	extractPriceAlertPage();
+		// }
 	}
 }, 2000)
 
