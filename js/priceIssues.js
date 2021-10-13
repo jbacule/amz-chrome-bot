@@ -143,11 +143,11 @@ async function extractPriceError() {
 			if (showMoreButtonStatus.getAttribute('disabled') && showMoreButtonStatus.getAttribute('disabled') === 'true') {
 				clearInterval(worker)
 				const headers = Object.values(HEADERS.inactiveOffers)
-        return Promise.resolve({
-          sheetName: "Price Alerts Result",
+        await createExcelFile(`Price_Alerts-Inactive-Offers.xlsx`, [{
+          sheetName: "Inactive Offers",
           headers,
           rows: results
-        })
+        }])
 			}
 		}, 1500)
 	}, 3000)
@@ -196,7 +196,7 @@ async function extractSalesConversion() {
 			if (showMoreButtonStatus.getAttribute('disabled') && showMoreButtonStatus.getAttribute('disabled') === 'true') {
 				clearInterval(worker)
 				const headers = Object.values(HEADERS.scListingsNoSales)
-        await createExcelFile(`Price_Alerts-${Date.now()}.xlsx`, [{
+        await createExcelFile(`Price_Alerts-Sales-Conversion.xlsx`, [{
           sheetName: "Sales Conversion",
           headers,
           rows: results
@@ -428,5 +428,5 @@ async function extractFeaturedOffers() {
   let result3 = await getFoEligible()
   items.push(result3)
   
-  await createExcelFile(`Price_Alerts-${Date.now()}.xlsx`, items)
+  await createExcelFile(`Price_Alerts-Featured-Offer.xlsx`, items)
 }
