@@ -1,37 +1,29 @@
  function uploadFeed(){
-    chrome.storage.local.get(["purgeReplaceStatus","notifyStatus"], function(data) {
-        let uploadHeader = $('span.a-color-error').text();
-        let elem = '#vlw-container > div.a-row > div.a-column.a-span9 > div.a-row.a-expander-container.a-expander-section-container.a-section-expander-container';
-        let status;
-        if( uploadHeader === 'Purge and Replace Your Inventory'){
-					if(data.purgeReplaceStatus === "disabled"){
-						$(elem).hide();
-						status = "disabled";
-					}else{
-						$(elem).show();
-						status = "enabled";
-					}
-					if(data.notifyStatus === "enabled"){
-						showNotification('Reminder',`Purge & Replace was ${status}!`)	
-					}
-        }
+	setTimeout(() => {
+		let newUploadHeader = document.querySelector('kat-tab#upload-tab[selected=""]')
+		if(newUploadHeader){
+			document.querySelector('#toggle-purge-replace-link').style.visibility = "hidden"
+			document.querySelector('kat-icon[name="update"]').style.visibility = "hidden"
+		}
+	}, 2000)
 
-				let newUploadHeader = document.querySelector('kat-tab#upload-tab[selected=""]')
-				if(newUploadHeader){
-					if(data.purgeReplaceStatus === "disabled"){
-						document.querySelector('#toggle-purge-replace-link').style.visibility = "hidden"
-						document.querySelector('kat-icon[name="update"]').style.visibility = "hidden"
-						status = "disabled";
-					}else{
-						document.querySelector('#toggle-purge-replace-link').style.visibility = "visible"
-						document.querySelector('kat-icon[name="update"]').style.visibility = "visible"
-						status = "enabled";
-					}
-					if(data.notifyStatus === "enabled"){
-						showNotification('Reminder',`Purge & Replace was ${status}!`)	
-					}
-				}
-    });
+	chrome.storage.local.get(["purgeReplaceStatus","notifyStatus"], function(data) {
+		let uploadHeader = $('span.a-color-error').text();
+		let elem = '#vlw-container > div.a-row > div.a-column.a-span9 > div.a-row.a-expander-container.a-expander-section-container.a-section-expander-container';
+		let status;
+		if( uploadHeader === 'Purge and Replace Your Inventory'){
+			if(data.purgeReplaceStatus === "disabled"){
+				$(elem).hide();
+				status = "disabled";
+			}else{
+				$(elem).show();
+				status = "enabled";
+			}
+			if(data.notifyStatus === "enabled"){
+				showNotification('Reminder',`Purge & Replace was ${status}!`)	
+			}
+		}
+	});
 }
 
 function amazonDetailPage(){
