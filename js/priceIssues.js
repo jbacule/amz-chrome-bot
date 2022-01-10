@@ -84,17 +84,17 @@ async function extractPriceError() {
 		setTimeout(async () => {
 			document.querySelectorAll('kat-table-body[role="rowgroup"] > kat-table-row[role="row"]:not(.pep-alert-row)').forEach((item, index) => {
 				if (counter < index && item.querySelectorAll('kat-table-cell').length > 0) {
-					let baseSelector = 'kat-table-cell.nudge-list-row-pep__col-one > div > div.product-details__description-container';
+					let baseSelector = 'kat-table-cell.nudge-list-row-pep-bulk-action__col-one > div > div.product-details__description-container';
 
-					let title = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('label');
-					let url = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('href');
-					let asin = item.querySelector(`${baseSelector} > div > div:nth-child(1)`).textContent.replace(/\n|\r|\t|ASIN:/g, '').trim()
-					let sku = item.querySelector(`${baseSelector} > div > div:nth-child(2)`).textContent.replace(/\n|\r|\t|SKU:/g, '').trim()
-					let condition = item.querySelector(`${baseSelector} > div > div:nth-child(3)`).textContent.replace(/\n|\r|\t|Condition:/g, '').trim()
+					let title = item.querySelector(`${baseSelector} > kat-link[variant="link"]`) ? item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('label') : '';
+					let url = item.querySelector(`${baseSelector} > kat-link[variant="link"]`) ? item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('href') : '';
+					let asin = item.querySelector(`${baseSelector} > div > div:nth-child(1)`) ? item.querySelector(`${baseSelector} > div > div:nth-child(1)`).textContent.replace(/\n|\r|\t|ASIN:/g, '').trim() : ''
+					let sku = item.querySelector(`${baseSelector} > div > div:nth-child(2)`) ? item.querySelector(`${baseSelector} > div > div:nth-child(2)`).textContent.replace(/\n|\r|\t|SKU:/g, '').trim() : ''
+					let condition = item.querySelector(`${baseSelector} > div > div:nth-child(3)`) ? item.querySelector(`${baseSelector} > div > div:nth-child(3)`).textContent.replace(/\n|\r|\t|Condition:/g, '').trim() : ''
 
-					let price = item.querySelector('kat-table-cell.nudge-list-row-pep__col-three > div.product-offer-price').textContent.replace('--.--', '').trim()
-					let minPrice = item.querySelector('kat-table-cell.nudge-list-row-pep__col-seven > div.product-minimum-price > kat-label').getAttribute('text')
-					let maxPrice = item.querySelector('kat-table-cell.nudge-list-row-pep__col-eight > div.product-maximum-price > kat-label').getAttribute('text')
+					let price = item.querySelector('kat-table-cell.nudge-list-row-pep__col-three > div.product-offer-price') ? item.querySelector('kat-table-cell.nudge-list-row-pep__col-three > div.product-offer-price').textContent.replace('--.--', '').trim() : ''
+					let minPrice = item.querySelector('kat-table-cell.nudge-list-row-pep__col-seven > div.product-minimum-price > kat-label') ? item.querySelector('kat-table-cell.nudge-list-row-pep__col-seven > div.product-minimum-price > kat-label').getAttribute('text') : ''
+					let maxPrice = item.querySelector('kat-table-cell.nudge-list-row-pep__col-eight > div.product-maximum-price > kat-label') ? item.querySelector('kat-table-cell.nudge-list-row-pep__col-eight > div.product-maximum-price > kat-label').getAttribute('text') : ''
 
 					let referencePrices = []
 					let noReferencePriceElem = item.querySelectorAll('kat-table-cell.nudge-list-row-pep__col-six div.product-reference-price:nth-child(1) > kat-label[text="No applicable Reference price"]')
@@ -133,6 +133,7 @@ async function extractPriceError() {
           objData[inactiveOffers.priceByAmazon] = priceByAmazon
           objData[inactiveOffers.listPrice] = listPrice
 
+          console.log(objData)
 					results.push(objData)
 					counter = index;
 				}

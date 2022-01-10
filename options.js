@@ -303,7 +303,7 @@ function handleCloseTabs() {
 
 function closeTabs() {
     chrome.tabs.query({ currentWindow: true }, callback);
-    function callback(tabs) {
+function callback(tabs) {
         let type = $("input[name='radioType']:checked").val();
         if (type === 'chkAmazon') {
             for (let x in tabs) {
