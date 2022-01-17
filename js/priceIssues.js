@@ -8,7 +8,9 @@ const HEADERS = {
     condition: 'Condition',
     price: 'Price',
     minPrice: 'Min Price',
+    minRecommendedPrice: 'Minimum Recommended Price',
     maxPrice: 'Max Price',
+    maxRecommendedPrice: 'Maximum Recommended Price',
     averageSellingPrice: "ReferencePrice: Average Selling Price",
     featuredOffer: "ReferencePrice: Featured Offer",
     priceByAmazon: "ReferencePrice: Prize by Amazon",
@@ -92,16 +94,27 @@ async function extractPriceError() {
 					let sku = item.querySelector(`${baseSelector} > div > div:nth-child(2)`) ? item.querySelector(`${baseSelector} > div > div:nth-child(2)`).textContent.replace(/\n|\r|\t|SKU:/g, '').trim() : ''
 					let condition = item.querySelector(`${baseSelector} > div > div:nth-child(3)`) ? item.querySelector(`${baseSelector} > div > div:nth-child(3)`).textContent.replace(/\n|\r|\t|Condition:/g, '').trim() : ''
 
-					let price = item.querySelector('kat-table-cell.nudge-list-row-pep__col-three > div.product-offer-price') ? item.querySelector('kat-table-cell.nudge-list-row-pep__col-three > div.product-offer-price').textContent.replace('--.--', '').trim() : ''
-					let minPrice = item.querySelector('kat-table-cell.nudge-list-row-pep__col-seven > div.product-minimum-price > kat-label') ? item.querySelector('kat-table-cell.nudge-list-row-pep__col-seven > div.product-minimum-price > kat-label').getAttribute('text') : ''
-					let maxPrice = item.querySelector('kat-table-cell.nudge-list-row-pep__col-eight > div.product-maximum-price > kat-label') ? item.querySelector('kat-table-cell.nudge-list-row-pep__col-eight > div.product-maximum-price > kat-label').getAttribute('text') : ''
+					let priceElem  = item.querySelector('kat-table-cell.nudge-list-row-pep-bulk-action__col-four > div.product-offer-sale-business-price div.editable-price__new-price kat-input');
+          let price = priceElem ? priceElem.getAttribute('value') : '';
+
+          let minPriceELem = item.querySelector('kat-table-cell.nudge-list-row-pep-bulk-action__col-three > div.product-minimum-maximum-price > div:nth-child(2) div.editable-price__new-price kat-input');
+					let minPrice = minPriceELem ? minPriceELem.getAttribute('value') : ''
+
+          let minRecommenededPriceELem = item.querySelector('kat-table-cell.nudge-list-row-pep-bulk-action__col-three > div.product-minimum-maximum-price > div:nth-child(2) div.product-reference-price__source');
+					let minRecommendedPrice = minRecommenededPriceELem ? minRecommenededPriceELem.textContent : ''
+
+          let maxPriceELem = item.querySelector('kat-table-cell.nudge-list-row-pep-bulk-action__col-three > div.product-minimum-maximum-price > div:nth-child(4) div.editable-price__new-price kat-input');
+					let maxPrice = maxPriceELem ? maxPriceELem.getAttribute('value') : ''
+
+          let maxRecommendedPriceELem = item.querySelector('kat-table-cell.nudge-list-row-pep-bulk-action__col-three > div.product-minimum-maximum-price > div:nth-child(4) div.product-reference-price__source');
+					let maxRecommendedPrice = maxRecommendedPriceELem ? maxRecommendedPriceELem.textContent : ''
 
 					let referencePrices = []
 					let noReferencePriceElem = item.querySelectorAll('kat-table-cell.nudge-list-row-pep__col-six div.product-reference-price:nth-child(1) > kat-label[text="No applicable Reference price"]')
 					if (noReferencePriceElem.length === 0) {
-						item.querySelectorAll('kat-table-cell.nudge-list-row-pep__col-six div.product-reference-price').forEach(e => {
+						item.querySelectorAll('kat-table-cell.nudge-list-row-pep-bulk-action__col-five div.product-reference-price').forEach(e => {
 							let value = e.querySelector('kat-label').getAttribute('text');
-							let text = e.querySelector('div.product-reference-price__source').textContent.replace(/\n|\r/g, '').trim();
+							let text = e.querySelector('div.product-reference-price__source') ? e.querySelector('div.product-reference-price__source').textContent.replace(/\n|\r/g, '').trim() : '';
 							referencePrices.push({ text, value })
 						})
 					}
@@ -127,7 +140,9 @@ async function extractPriceError() {
           objData[inactiveOffers.condition] = condition
           objData[inactiveOffers.price] = price
           objData[inactiveOffers.minPrice] = minPrice
+          objData[inactiveOffers.minRecommendedPrice] = minRecommendedPrice
           objData[inactiveOffers.maxPrice] = maxPrice
+          objData[inactiveOffers.maxRecommendedPrice] = maxRecommendedPrice
           objData[inactiveOffers.averageSellingPrice] = averageSellingPrice
           objData[inactiveOffers.featuredOffer] = featuredOffer
           objData[inactiveOffers.priceByAmazon] = priceByAmazon
