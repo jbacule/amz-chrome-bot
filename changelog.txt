@@ -12,7 +12,7 @@
 - Added Extract Edit Detail Page in SC [10/17/2020]
 - Fixed issue on redirecting Amazon page to Offer Listing Page [11/17/2020]
 
-Changelogs as of 2021:
+Updates - 2021:
 - Added Brand Page Extractor [03/16/2021]
 - Update Brand Page Extractor [03/20/2021]
 - Updated excel format in bulk extractor tool [04/14/2021]
@@ -23,3 +23,6 @@ Changelogs as of 2021:
 - Added additional extract in the other tabs in Pricing Issue Page [09/30/2021]
 - Fixed extraction in Price Alert Page - Inactive Offers tab [10/14/2021]
 - Fixed hiding of purge link in new Inventory Upload page [10/15/2021]
+
+Updates - 2022:
+- Fixed Pricing Health Page [5/5/2022]

@@ -69,15 +69,16 @@ async function extractDataHandler() {
 }
 
 function extractPriceAlertPage() {
-	if(document.querySelector('kat-tab-header[tab-id="PricingErrorStats"]').getAttribute('class')){
+	let tabSelected = document.querySelector('kat-tabs.ph-tabs').getAttribute('selected')
+	if(tabSelected === 'PricingErrorStats'){
 		console.log('Extracting Price Error...')
 		extractPriceError();
 	}
-	if(document.querySelector('kat-tab-header[tab-id="FeaturedOfferWinRate"]').getAttribute('class')){
+	if(tabSelected === 'FeaturedOfferWinRate'){
 		console.log('Extracting Featured Offer...')
 		extractFeaturedOffers();
 	}
-	if(document.querySelector('kat-tab-header[tab-id="SaleConversionRate"]').getAttribute('class')){
+	if(tabSelected === 'SaleConversionRate'){
 		console.log('Extracting Sales Conversion...')
 		extractSalesConversion();
 	}
@@ -107,7 +108,7 @@ setTimeout(() => {
 		// 	extractPriceAlertPage();
 		// }
 	}
-}, 2000)
+}, 4000)
 
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {

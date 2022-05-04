@@ -88,8 +88,8 @@ async function extractPriceError() {
 				if (counter < index && item.querySelectorAll('kat-table-cell').length > 0) {
 					let baseSelector = 'kat-table-cell.nudge-list-row-pep-bulk-action__col-one > div > div.product-details__description-container';
 
-					let title = item.querySelector(`${baseSelector} > kat-link[variant="link"]`) ? item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('label') : '';
-					let url = item.querySelector(`${baseSelector} > kat-link[variant="link"]`) ? item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('href') : '';
+					let title = item.querySelector(`${baseSelector} > kat-link`) ? item.querySelector(`${baseSelector} > kat-link`).getAttribute('label') : '';
+					let url = item.querySelector(`${baseSelector} > kat-link`) ? item.querySelector(`${baseSelector} > kat-link`).getAttribute('href') : '';
 					let asin = item.querySelector(`${baseSelector} > div > div:nth-child(1)`) ? item.querySelector(`${baseSelector} > div > div:nth-child(1)`).textContent.replace(/\n|\r|\t|ASIN:/g, '').trim() : ''
 					let sku = item.querySelector(`${baseSelector} > div > div:nth-child(2)`) ? item.querySelector(`${baseSelector} > div > div:nth-child(2)`).textContent.replace(/\n|\r|\t|SKU:/g, '').trim() : ''
 					let condition = item.querySelector(`${baseSelector} > div > div:nth-child(3)`) ? item.querySelector(`${baseSelector} > div > div:nth-child(3)`).textContent.replace(/\n|\r|\t|Condition:/g, '').trim() : ''
@@ -181,8 +181,8 @@ async function extractSalesConversion() {
 				if (counter < index && item.querySelectorAll('kat-table-cell').length > 0) {
 					let baseSelector = 'kat-table-cell.nudge-list-row-nosale__col-one > div > div.product-details__description-container';
 
-					let title = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('label');
-					let url = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('href');
+					let title = item.querySelector(`${baseSelector} > kat-link`).getAttribute('label');
+					let url = item.querySelector(`${baseSelector} > kat-link`).getAttribute('href');
 					let asin = item.querySelector(`${baseSelector} > div > div:nth-child(1)`).textContent.replace(/\n|\r|\t|ASIN:/g, '').trim()
 					let sku = item.querySelector(`${baseSelector} > div > div:nth-child(2)`).textContent.replace(/\n|\r|\t|SKU:/g, '').trim()
 					
@@ -228,11 +228,11 @@ function delay(ms) {
 
 function getFoIneligible1(){
   return new Promise(async (resolve, reject) => {
-    document.querySelector('kat-tab-header[tab-id="FODNudgeList"]').click()
+    document.querySelector('kat-tab.ph-tab-body[tab-id="FODNudgeList"]').shadowRoot.querySelector('div[role="tab"]').click()
     await delay(2000)
 
     //1st tab
-    document.querySelector('kat-tabs.ph-tabs-fod kat-tab-header[tab-id="FODNudgeList"]').click()
+    document.querySelector('kat-tab.ph-tab-fod-body[tab-id="FODNudgeList"]').shadowRoot.querySelector('div[role="tab"]').click()
     await delay(5000)
 
     let runWorker = true
@@ -244,8 +244,8 @@ function getFoIneligible1(){
         if (counter1 < index && item.querySelectorAll('kat-table-cell').length > 0) {
           let baseSelector = 'kat-table-cell.nudge-list-row__col-one > div > div.product-details__description-container';
 
-          let title = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('label');
-          let url = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('href');
+          let title = item.querySelector(`${baseSelector} > kat-link`).getAttribute('label');
+          let url = item.querySelector(`${baseSelector} > kat-link`).getAttribute('href');
           let asin = item.querySelector(`${baseSelector} > div > div:nth-child(1)`).textContent.replace(/\n|\r|\t|ASIN:/g, '').trim()
           let sku = item.querySelector(`${baseSelector} > div > div:nth-child(2)`).textContent.replace(/\n|\r|\t|SKU:/g, '').trim()
           
@@ -272,7 +272,7 @@ function getFoIneligible1(){
 
       window.scrollTo(0, document.body.scrollHeight);
 
-      let showMoreButtonStatus = document.querySelector('kat-tab[tab-id="FODNudgeList"] > div > kat-table > kat-table-footer > div > kat-button[label="Show more"]');
+      let showMoreButtonStatus = document.querySelector('kat-tab[tab-id="FODNudgeList"] > div > div.nudge-list-footer__show-more > kat-button[label="Show more"]');
       if (showMoreButtonStatus.getAttribute('disabled') && showMoreButtonStatus.getAttribute('disabled') === 'true') {
         runWorker = false
       } else {
@@ -293,7 +293,7 @@ function getFoIneligible1(){
 function getFoIneligible2(){
   return new Promise(async (resolve, reject) => {
     //2nd tab
-    document.querySelector('kat-tabs.ph-tabs-fod kat-tab-header[tab-id="PGFODNudgeList"]').click()
+    document.querySelector('kat-tab.ph-tab-fod-body[tab-id="PGFODNudgeList"]').shadowRoot.querySelector('div[role="tab"]').click()
     await delay(5000)
 
     let runWorker = true
@@ -305,8 +305,8 @@ function getFoIneligible2(){
         if (counter2 < index && item.querySelectorAll('kat-table-cell').length > 0) {
           let baseSelector = 'kat-table-cell.nudge-list-row__col-one > div > div.product-details__description-container';
 
-          let title = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('label');
-          let url = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('href');
+          let title = item.querySelector(`${baseSelector} > kat-link`).getAttribute('label');
+          let url = item.querySelector(`${baseSelector} > kat-link`).getAttribute('href');
           let asin = item.querySelector(`${baseSelector} > div > div:nth-child(1)`).textContent.replace(/\n|\r|\t|ASIN:/g, '').trim()
           let sku = item.querySelector(`${baseSelector} > div > div:nth-child(2)`).textContent.replace(/\n|\r|\t|SKU:/g, '').trim()
           
@@ -356,8 +356,8 @@ function getFoIneligible2(){
       })
 
       window.scrollTo(0, document.body.scrollHeight);
-
-      let showMoreButtonStatus = document.querySelector('kat-tab[tab-id="PGFODNudgeList"] > div > kat-table > kat-table-footer > div > kat-button[label="Show more"]');
+      //PGFODNudgeList
+      let showMoreButtonStatus = document.querySelector('kat-tab[tab-id="PGFODNudgeList"] > div > div.nudge-list-footer__show-more > kat-button[label="Show more"]');
       if (showMoreButtonStatus.getAttribute('disabled') && showMoreButtonStatus.getAttribute('disabled') === 'true') {
         runWorker = false
       }else{
@@ -377,7 +377,7 @@ function getFoIneligible2(){
 function getFoEligible(){
   return new Promise(async (resolve, reject) => {
     //3rd tab
-    document.querySelector('kat-tab-header[tab-id="FOENudgeList"]').click()
+    document.querySelector('kat-tab.ph-tab-body[tab-id="FOENudgeList"]').shadowRoot.querySelector('div[role="tab"]').click()
     await delay(5000)
 
     let runWorker = true
@@ -389,8 +389,8 @@ function getFoEligible(){
         if (counter3 < index && item.querySelectorAll('kat-table-cell').length > 0) {
           let baseSelector = 'kat-table-cell.nudge-list-row-fo__col-one > div > div.product-details__description-container';
 
-          let title = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('label');
-          let url = item.querySelector(`${baseSelector} > kat-link[variant="link"]`).getAttribute('href');
+          let title = item.querySelector(`${baseSelector} > kat-link`).getAttribute('label');
+          let url = item.querySelector(`${baseSelector} > kat-link`).getAttribute('href');
           let asin = item.querySelector(`${baseSelector} > div > div:nth-child(1)`).textContent.replace(/\n|\r|\t|ASIN:/g, '').trim()
           let sku = item.querySelector(`${baseSelector} > div > div:nth-child(2)`).textContent.replace(/\n|\r|\t|SKU:/g, '').trim()
           
@@ -415,8 +415,8 @@ function getFoEligible(){
         }
       })
       window.scrollTo(0, document.body.scrollHeight);
-      
-      let showMoreButtonStatus = document.querySelector('kat-tab[tab-id="FOENudgeList"] > div > kat-table > kat-table-footer > div > kat-button[label="Show more"]');
+      //FOENudgeList
+      let showMoreButtonStatus = document.querySelector('kat-tab[tab-id="FOENudgeList"] > div > div.nudge-list-footer__show-more > kat-button[label="Show more"]');
       if (showMoreButtonStatus.getAttribute('disabled') && showMoreButtonStatus.getAttribute('disabled') === 'true') {
         runWorker = false
       }else{
